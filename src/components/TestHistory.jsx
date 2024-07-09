@@ -1,22 +1,28 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useUser } from '@clerk/clerk-react';
+import { fetchTestHistoryAsync } from '../store/typingSlice';
 import { FiClock, FiTarget, FiAlertCircle, FiDelete } from 'react-icons/fi';
 
 const TestHistory = () => {
   const { isSignedIn, user } = useUser();
-  const { testHistory } = useSelector((state) => state.typing);
+  const dispatch = useDispatch();
+  const { testHistory, userEmail } = useSelector((state) => state.typing);
+
+  useEffect(() => {
+    if (isSignedIn && userEmail) {
+      dispatch(fetchTestHistoryAsync(userEmail));
+    }
+  }, [isSignedIn, userEmail, dispatch]);
 
   if (!isSignedIn) {
     return <div className="text-center mt-8">Please sign in to view your test history.</div>;
   }
 
-  const userTestHistory = testHistory.filter(test => test.userId === user.id);
-
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-4 dark:text-white">Test History</h2>
-      {userTestHistory.length === 0 ? (
+      {testHistory.length === 0 ? (
         <p className="text-center text-gray-600 dark:text-gray-400">No test history available. Complete a test to see your results here.</p>
       ) : (
         <div className="overflow-x-auto">
@@ -31,7 +37,7 @@ const TestHistory = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {userTestHistory.slice().reverse().map((test, index) => (
+              {testHistory.map((test, index) => (
                 <tr key={index} className={index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-900'}>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(test.date).toLocaleString()}</td>
                   <td className="px-4 py-4 whitespace-nowrap">
@@ -55,7 +61,7 @@ const TestHistory = () => {
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <FiDelete className="text-indigo-500 dark:text-indigo-400 mr-2" />
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{test.backspacesUsed}</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{test.backspaces_used}</span>
                     </div>
                   </td>
                 </tr>

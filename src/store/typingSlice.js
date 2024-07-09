@@ -1,4 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { saveTestHistory, fetchTestHistory } from './api';
 
 const texts = [
   "The quick brown fox jumps over the lazy dog.",
@@ -7,6 +8,22 @@ const texts = [
   "A journey of a thousand miles begins with a single step.",
   "Where there's a will, there's a way."
 ];
+
+export const saveTestHistoryAsync = createAsyncThunk(
+  'typing/saveTestHistory',
+  async (testData) => {
+    const response = await saveTestHistory(testData);
+    return response;
+  }
+);
+
+export const fetchTestHistoryAsync = createAsyncThunk(
+  'typing/fetchTestHistory',
+  async (email) => {
+    const response = await fetchTestHistory(email);
+    return response;
+  }
+);
 
 const initialState = {
   texts,
@@ -22,7 +39,7 @@ const initialState = {
   testHistory: [],
   backspaceEnabled: true,
   backspacesUsed: 0,
-  userId: null, // New field for user ID
+  userEmail: null,
 };
 
 export const typingSlice = createSlice({
@@ -50,15 +67,6 @@ export const typingSlice = createSlice({
       if (wpm > state.highScore) {
         state.highScore = wpm;
       }
-      state.testHistory.push({
-        userId: state.userId, // Include user ID in test history
-        date: new Date().toISOString(),
-        wpm,
-        accuracy: calculateAccuracy(state),
-        mistakes: state.mistakes,
-        textIndex: state.currentTextIndex,
-        backspacesUsed: state.backspacesUsed,
-      });
     },
     incrementMistakes: (state) => {
       state.mistakes += 1;
@@ -91,15 +99,25 @@ export const typingSlice = createSlice({
     incrementBackspaces: (state) => {
       state.backspacesUsed += 1;
     },
-    setUserId: (state, action) => {
-      state.userId = action.payload;
+    setUserEmail: (state, action) => {
+      state.userEmail = action.payload;
     },
-    // New reducer to clear user data on logout
     clearUserData: (state) => {
-      state.userId = null;
+      state.userEmail = null;
       state.highScore = 0;
       state.testHistory = [];
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchTestHistoryAsync.fulfilled, (state, action) => {
+        state.testHistory = action.payload;
+      })
+      .addCase(saveTestHistoryAsync.fulfilled, (state, action) => {
+        console.log('Test history saved successfully');
+        // Optionally, you could update the test history here as well
+        // state.testHistory = [...state.testHistory, action.payload];
+      });
   },
 });
 
@@ -107,12 +125,6 @@ const calculateWPM = (state) => {
   const minutes = state.elapsedTime / 60000;
   const words = state.userInput.trim().split(/\s+/).length;
   return Math.round(words / minutes);
-};
-
-const calculateAccuracy = (state) => {
-  const totalChars = state.texts[state.currentTextIndex].length;
-  const correctChars = totalChars - state.mistakes;
-  return Math.round((correctChars / totalChars) * 100);
 };
 
 export const {
@@ -126,7 +138,7 @@ export const {
   toggleDarkMode,
   toggleBackspace,
   incrementBackspaces,
-  setUserId,
+  setUserEmail,
   clearUserData,
 } = typingSlice.actions;
 

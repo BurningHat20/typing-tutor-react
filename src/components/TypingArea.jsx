@@ -8,19 +8,31 @@ import {
   endTimer,
   incrementMistakes,
   incrementBackspaces,
-  setUserId,
+  setUserEmail,
+  saveTestHistoryAsync
 } from '../store/typingSlice';
 
 const TypingArea = () => {
   const { isSignedIn, user } = useUser();
   const dispatch = useDispatch();
-  const { texts, currentTextIndex, userInput, startTime, completed, backspaceEnabled } = useSelector((state) => state.typing);
+  const { 
+    texts, 
+    currentTextIndex, 
+    userInput, 
+    startTime, 
+    completed, 
+    backspaceEnabled, 
+    userEmail,
+    elapsedTime,
+    mistakes,
+    backspacesUsed
+  } = useSelector((state) => state.typing);
   const text = texts[currentTextIndex];
   const containerRef = useRef(null);
 
   useEffect(() => {
     if (isSignedIn && user) {
-      dispatch(setUserId(user.id));
+      dispatch(setUserEmail(user.primaryEmailAddress.emailAddress));
     }
   }, [isSignedIn, user, dispatch]);
 
@@ -36,6 +48,7 @@ const TypingArea = () => {
     }
     if (userInput.length === text.length && !completed) {
       dispatch(endTimer());
+      handleTestCompletion();
     }
   }, [userInput, text, completed, dispatch]);
 
@@ -67,6 +80,31 @@ const TypingArea = () => {
       }
       dispatch(setUserInput(newInput));
     }
+  };
+
+  const handleTestCompletion = () => {
+    if (userEmail) {
+      const testData = {
+        email: userEmail,
+        wpm: calculateWPM(elapsedTime),
+        accuracy: calculateAccuracy(),
+        mistakes: mistakes,
+        backspacesUsed: backspacesUsed,
+      };
+      dispatch(saveTestHistoryAsync(testData));
+    }
+  };
+
+  const calculateWPM = (elapsedTime) => {
+    const minutes = elapsedTime / 60000;
+    const words = userInput.trim().split(/\s+/).length;
+    return Math.round(words / minutes);
+  };
+
+  const calculateAccuracy = () => {
+    const totalChars = text.length;
+    const correctChars = totalChars - mistakes;
+    return Math.round((correctChars / totalChars) * 100);
   };
 
   const renderText = () => {
