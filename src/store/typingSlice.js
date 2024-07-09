@@ -22,6 +22,7 @@ const initialState = {
   testHistory: [],
   backspaceEnabled: true,
   backspacesUsed: 0,
+  userId: null, // New field for user ID
 };
 
 export const typingSlice = createSlice({
@@ -50,6 +51,7 @@ export const typingSlice = createSlice({
         state.highScore = wpm;
       }
       state.testHistory.push({
+        userId: state.userId, // Include user ID in test history
         date: new Date().toISOString(),
         wpm,
         accuracy: calculateAccuracy(state),
@@ -89,6 +91,15 @@ export const typingSlice = createSlice({
     incrementBackspaces: (state) => {
       state.backspacesUsed += 1;
     },
+    setUserId: (state, action) => {
+      state.userId = action.payload;
+    },
+    // New reducer to clear user data on logout
+    clearUserData: (state) => {
+      state.userId = null;
+      state.highScore = 0;
+      state.testHistory = [];
+    },
   },
 });
 
@@ -115,6 +126,8 @@ export const {
   toggleDarkMode,
   toggleBackspace,
   incrementBackspaces,
+  setUserId,
+  clearUserData,
 } = typingSlice.actions;
 
 export default typingSlice.reducer;

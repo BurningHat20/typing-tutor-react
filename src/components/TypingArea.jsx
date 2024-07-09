@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useUser } from '@clerk/clerk-react';
 import {
   setUserInput,
   startTimer,
@@ -7,13 +8,21 @@ import {
   endTimer,
   incrementMistakes,
   incrementBackspaces,
+  setUserId,
 } from '../store/typingSlice';
 
 const TypingArea = () => {
+  const { isSignedIn, user } = useUser();
   const dispatch = useDispatch();
   const { texts, currentTextIndex, userInput, startTime, completed, backspaceEnabled } = useSelector((state) => state.typing);
   const text = texts[currentTextIndex];
   const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (isSignedIn && user) {
+      dispatch(setUserId(user.id));
+    }
+  }, [isSignedIn, user, dispatch]);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -79,6 +88,10 @@ const TypingArea = () => {
       );
     });
   };
+
+  if (!isSignedIn) {
+    return <div className="text-center mt-8">Please sign in to start typing.</div>;
+  }
 
   return (
     <div 
