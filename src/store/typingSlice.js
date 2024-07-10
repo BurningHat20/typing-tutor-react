@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { saveTestHistory, fetchTestHistory } from './api';
+import { saveTestHistory, fetchTestHistory, fetchHighScore } from './api';
 
 const texts = [
   "The quick brown fox jumps over the lazy dog.",
@@ -22,6 +22,14 @@ export const fetchTestHistoryAsync = createAsyncThunk(
   async (email) => {
     const response = await fetchTestHistory(email);
     return response;
+  }
+);
+
+export const fetchHighScoreAsync = createAsyncThunk(
+  'typing/fetchHighScore',
+  async (email) => {
+    const response = await fetchHighScore(email);
+    return response.highScore;
   }
 );
 
@@ -63,10 +71,6 @@ export const typingSlice = createSlice({
       state.endTime = Date.now();
       state.elapsedTime = state.endTime - state.startTime;
       state.completed = true;
-      const wpm = calculateWPM(state);
-      if (wpm > state.highScore) {
-        state.highScore = wpm;
-      }
     },
     incrementMistakes: (state) => {
       state.mistakes += 1;
@@ -115,17 +119,12 @@ export const typingSlice = createSlice({
       })
       .addCase(saveTestHistoryAsync.fulfilled, (state, action) => {
         console.log('Test history saved successfully');
-        // Optionally, you could update the test history here as well
-        // state.testHistory = [...state.testHistory, action.payload];
+      })
+      .addCase(fetchHighScoreAsync.fulfilled, (state, action) => {
+        state.highScore = action.payload;
       });
   },
 });
-
-const calculateWPM = (state) => {
-  const minutes = state.elapsedTime / 60000;
-  const words = state.userInput.trim().split(/\s+/).length;
-  return Math.round(words / minutes);
-};
 
 export const {
   setUserInput,

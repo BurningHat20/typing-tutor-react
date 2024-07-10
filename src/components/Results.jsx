@@ -1,15 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useUser } from '@clerk/clerk-react';
-import { resetTest, changeText, toggleBackspace } from '../store/typingSlice';
+import { resetTest, changeText, toggleBackspace, fetchHighScoreAsync } from '../store/typingSlice';
 import { FiRefreshCw, FiSkipForward, FiAward, FiDelete } from 'react-icons/fi';
 
 const Results = () => {
   const { isSignedIn } = useUser();
   const dispatch = useDispatch();
-  const { texts, currentTextIndex, userInput, elapsedTime, mistakes, completed, highScore, backspaceEnabled, backspacesUsed } = useSelector(
+  const { texts, currentTextIndex, userInput, elapsedTime, mistakes, completed, highScore, backspaceEnabled, backspacesUsed, userEmail } = useSelector(
     (state) => state.typing
   );
+
+  useEffect(() => {
+    if (isSignedIn && userEmail) {
+      dispatch(fetchHighScoreAsync(userEmail));
+    }
+  }, [isSignedIn, userEmail, dispatch]);
 
   const calculateWPM = () => {
     if (!completed) return 0;
