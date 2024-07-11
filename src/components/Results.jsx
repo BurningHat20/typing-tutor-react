@@ -1,25 +1,25 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useUser } from '@clerk/clerk-react';
 import { resetTest, changeText, toggleBackspace, fetchHighScoreAsync } from '../store/typingSlice';
-import { FiRefreshCw, FiSkipForward, FiAward, FiDelete } from 'react-icons/fi';
+import { selectTypingResults } from '../store/selectors';
+import { FiRefreshCw, FiSkipForward, FiAward, FiDelete, FiTarget } from 'react-icons/fi';
 
 const Results = () => {
   const { isSignedIn } = useUser();
   const dispatch = useDispatch();
   const { 
-    texts, 
-    currentTextIndex, 
-    userInput, 
     elapsedTime, 
     mistakes, 
-    completed, 
     highScore, 
     backspaceEnabled, 
     backspacesUsed, 
     userEmail, 
-    wpm 
-  } = useSelector((state) => state.typing);
+    wpm,
+    texts,
+    currentTextIndex,
+    userInput
+  } = useSelector(selectTypingResults);
 
   useEffect(() => {
     if (isSignedIn && userEmail) {
@@ -27,32 +27,22 @@ const Results = () => {
     }
   }, [isSignedIn, userEmail, dispatch]);
 
-  const calculateAccuracy = () => {
-    const totalChars = texts[currentTextIndex].length;
-    const correctChars = totalChars - mistakes;
-    return Math.round((correctChars / totalChars) * 100);
-  };
-
-  const formatTime = (ms) => {
-    const seconds = Math.floor(ms / 1000);
+  const formatTime = useMemo(() => {
+    const seconds = Math.floor(elapsedTime / 1000);
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
+  }, [elapsedTime]);
 
-  const handleReset = () => {
-    dispatch(resetTest());
-  };
+  const accuracy = useMemo(() => {
+    const totalChars = texts[currentTextIndex].length;
+    const correctChars = totalChars - mistakes;
+    return Math.round((correctChars / totalChars) * 100);
+  }, [texts, currentTextIndex, mistakes]);
 
-  const handleChangeText = () => {
-    dispatch(changeText());
-  };
-
-  const handleToggleBackspace = () => {
-    dispatch(toggleBackspace());
-  };
-
-  const progress = (userInput.length / texts[currentTextIndex].length) * 100;
+  const handleReset = useCallback(() => dispatch(resetTest()), [dispatch]);
+  const handleChangeText = useCallback(() => dispatch(changeText()), [dispatch]);
+  const handleToggleBackspace = useCallback(() => dispatch(toggleBackspace()), [dispatch]);
 
   if (!isSignedIn) {
     return <div className="text-center mt-8">Please sign in to view results.</div>;
@@ -60,69 +50,45 @@ const Results = () => {
 
   return (
     <div className="mt-4 md:mt-8 px-4 md:px-0">
-      <div className="mb-4 bg-gray-200 dark:bg-gray-700 rounded-full">
-        <div
-          className="bg-blue-500 dark:bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full transition-all duration-300 ease-in-out"
-          style={{ width: `${progress}%` }}
-        >
-          {Math.round(progress)}%
-        </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <ResultBox label="WPM" value={wpm} color="blue" />
+        <ResultBox label="Accuracy" value={`${accuracy}%`} color="green" icon={<FiTarget />} />
+        <ResultBox label="Time" value={formatTime} color="yellow" />
+        <ResultBox label="Mistakes" value={mistakes} color="red" />
+        <ResultBox label="Backspaces" value={backspacesUsed} color="indigo" />
+        <ResultBox label="High Score" value={`${highScore} WPM`} color="purple" icon={<FiAward />} />
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-        <div className="bg-blue-100 dark:bg-blue-800 p-4 rounded-lg shadow-md">
-          <p className="text-sm md:text-lg font-medium text-blue-800 dark:text-blue-200">WPM</p>
-          <p className="text-xl md:text-3xl font-bold text-blue-900 dark:text-blue-100">{wpm}</p>
-        </div>
-        <div className="bg-green-100 dark:bg-green-800 p-4 rounded-lg shadow-md">
-          <p className="text-sm md:text-lg font-medium text-green-800 dark:text-green-200">Accuracy</p>
-          <p className="text-xl md:text-3xl font-bold text-green-900 dark:text-green-100">{calculateAccuracy()}%</p>
-        </div>
-        <div className="bg-red-100 dark:bg-red-800 p-4 rounded-lg shadow-md">
-          <p className="text-sm md:text-lg font-medium text-red-800 dark:text-red-200">Mistakes</p>
-          <p className="text-xl md:text-3xl font-bold text-red-900 dark:text-red-100">{mistakes}</p>
-        </div>
-        <div className="bg-yellow-100 dark:bg-yellow-800 p-4 rounded-lg shadow-md">
-          <p className="text-sm md:text-lg font-medium text-yellow-800 dark:text-yellow-200">Time</p>
-          <p className="text-xl md:text-3xl font-bold text-yellow-900 dark:text-yellow-100">{formatTime(elapsedTime)}</p>
-        </div>
-        <div className="bg-indigo-100 dark:bg-indigo-800 p-4 rounded-lg shadow-md">
-          <p className="text-sm md:text-lg font-medium text-indigo-800 dark:text-indigo-200">Backspaces</p>
-          <p className="text-xl md:text-3xl font-bold text-indigo-900 dark:text-indigo-100">{backspacesUsed}</p>
-        </div>
-      </div>
-      <div className="mt-6 flex flex-col sm:flex-row justify-between items-center">
-        <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-4 sm:mb-0">
-        <button
-            className="bg-blue-500 dark:bg-blue-600 text-white px-3 py-2 rounded-lg flex items-center transition-colors duration-300 hover:bg-blue-600 dark:hover:bg-blue-700 text-sm md:text-base"
-            onClick={handleReset}
-          >
-            <FiRefreshCw className="mr-2" /> Reset Test
-          </button>
-          <button
-            className="bg-green-500 dark:bg-green-600 text-white px-3 py-2 rounded-lg flex items-center transition-colors duration-300 hover:bg-green-600 dark:hover:bg-green-700 text-sm md:text-base"
-            onClick={handleChangeText}
-          >
-            <FiSkipForward className="mr-2" /> Next Text
-          </button>
-          <button
-            className={`px-3 py-2 rounded-lg flex items-center transition-colors duration-300 text-sm md:text-base ${
-              backspaceEnabled
-                ? 'bg-indigo-500 dark:bg-indigo-600 text-white hover:bg-indigo-600 dark:hover:bg-indigo-700'
-                : 'bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300'
-            }`}
-            onClick={handleToggleBackspace}
-          >
-            <FiDelete className="mr-2" /> {backspaceEnabled ? 'Disable' : 'Enable'} Backspace
-          </button>
-        </div>
-        <div className="flex items-center bg-purple-100 dark:bg-purple-800 p-3 rounded-lg shadow-md mt-4 sm:mt-0">
-          <FiAward className="text-purple-500 dark:text-purple-300 mr-2 text-lg md:text-xl" />
-          <span className="text-purple-800 dark:text-purple-200 font-medium text-sm md:text-base">High Score:</span>
-          <span className="text-purple-900 dark:text-purple-100 font-bold ml-2 text-sm md:text-base">{highScore} WPM</span>
-        </div>
+      <div className="mt-6 flex flex-wrap justify-center gap-4">
+        <ActionButton onClick={handleReset} icon={<FiRefreshCw />} label="Reset Test" color="blue" />
+        <ActionButton onClick={handleChangeText} icon={<FiSkipForward />} label="Next Text" color="green" />
+        <ActionButton 
+          onClick={handleToggleBackspace} 
+          icon={<FiDelete />} 
+          label={`${backspaceEnabled ? 'Disable' : 'Enable'} Backspace`} 
+          color={backspaceEnabled ? 'indigo' : 'gray'}
+        />
       </div>
     </div>
   );
 };
 
-export default Results;
+const ResultBox = React.memo(({ label, value, color, icon }) => (
+  <div className={`bg-${color}-100 dark:bg-${color}-800 p-4 rounded-lg shadow-md`}>
+    <p className={`text-sm md:text-lg font-medium text-${color}-800 dark:text-${color}-200 flex items-center`}>
+      {icon && <span className="mr-2">{icon}</span>}
+      {label}
+    </p>
+    <p className={`text-xl md:text-3xl font-bold text-${color}-900 dark:text-${color}-100`}>{value}</p>
+  </div>
+));
+
+const ActionButton = React.memo(({ onClick, icon, label, color }) => (
+  <button
+    className={`bg-${color}-500 dark:bg-${color}-600 text-white px-3 py-2 rounded-lg flex items-center transition-colors duration-300 hover:bg-${color}-600 dark:hover:bg-${color}-700 text-sm md:text-base`}
+    onClick={onClick}
+  >
+    <span className="mr-2">{icon}</span> {label}
+  </button>
+));
+
+export default React.memo(Results);

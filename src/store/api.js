@@ -46,3 +46,4 @@ export const fetchHighScore = async (email) => {
     throw error;
   }
 };
+

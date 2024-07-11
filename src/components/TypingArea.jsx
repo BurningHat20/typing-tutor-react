@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useUser } from '@clerk/clerk-react';
 import {
@@ -12,6 +12,7 @@ import {
   saveTestHistoryAsync,
   calculateAndSetWPM
 } from '../store/typingSlice';
+import { selectTypingArea } from '../store/selectors';
 
 const TypingArea = () => {
   const { isSignedIn, user } = useUser();
@@ -27,7 +28,8 @@ const TypingArea = () => {
     elapsedTime,
     mistakes,
     backspacesUsed
-  } = useSelector((state) => state.typing);
+  } = useSelector(selectTypingArea);
+  
   const text = texts[currentTextIndex];
   const containerRef = useRef(null);
 
@@ -63,7 +65,7 @@ const TypingArea = () => {
     return () => clearInterval(timer);
   }, [startTime, completed, dispatch]);
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = useCallback((e) => {
     e.preventDefault();
     if (completed) return;
 
@@ -81,9 +83,9 @@ const TypingArea = () => {
       }
       dispatch(setUserInput(newInput));
     }
-  };
+  }, [completed, backspaceEnabled, userInput, text, dispatch]);
 
-  const handleTestCompletion = () => {
+  const handleTestCompletion = useCallback(() => {
     if (userEmail) {
       dispatch(calculateAndSetWPM());
       const testData = {
@@ -94,15 +96,15 @@ const TypingArea = () => {
       };
       dispatch(saveTestHistoryAsync(testData));
     }
-  };
+  }, [userEmail, mistakes, backspacesUsed, dispatch]);
 
-  const calculateAccuracy = () => {
+  const calculateAccuracy = useCallback(() => {
     const totalChars = text.length;
     const correctChars = totalChars - mistakes;
     return Math.round((correctChars / totalChars) * 100);
-  };
+  }, [text, mistakes]);
 
-  const renderText = () => {
+  const renderText = useCallback(() => {
     return text.split('').map((char, index) => {
       let className = 'text-gray-500 dark:text-gray-400';
       if (index < userInput.length) {
@@ -120,7 +122,7 @@ const TypingArea = () => {
         </span>
       );
     });
-  };
+  }, [text, userInput]);
 
   if (!isSignedIn) {
     return <div className="text-center mt-8">Please sign in to start typing.</div>;
@@ -138,4 +140,4 @@ const TypingArea = () => {
   );
 };
 
-export default TypingArea;
+export default React.memo(TypingArea);
