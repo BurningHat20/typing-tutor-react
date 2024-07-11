@@ -7,22 +7,25 @@ import { FiRefreshCw, FiSkipForward, FiAward, FiDelete } from 'react-icons/fi';
 const Results = () => {
   const { isSignedIn } = useUser();
   const dispatch = useDispatch();
-  const { texts, currentTextIndex, userInput, elapsedTime, mistakes, completed, highScore, backspaceEnabled, backspacesUsed, userEmail } = useSelector(
-    (state) => state.typing
-  );
+  const { 
+    texts, 
+    currentTextIndex, 
+    userInput, 
+    elapsedTime, 
+    mistakes, 
+    completed, 
+    highScore, 
+    backspaceEnabled, 
+    backspacesUsed, 
+    userEmail, 
+    wpm 
+  } = useSelector((state) => state.typing);
 
   useEffect(() => {
     if (isSignedIn && userEmail) {
       dispatch(fetchHighScoreAsync(userEmail));
     }
   }, [isSignedIn, userEmail, dispatch]);
-
-  const calculateWPM = () => {
-    if (!completed) return 0;
-    const minutes = elapsedTime / 60000;
-    const words = userInput.trim().split(/\s+/).length;
-    return Math.round(words / minutes);
-  };
 
   const calculateAccuracy = () => {
     const totalChars = texts[currentTextIndex].length;
@@ -68,7 +71,7 @@ const Results = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <div className="bg-blue-100 dark:bg-blue-800 p-4 rounded-lg shadow-md">
           <p className="text-sm md:text-lg font-medium text-blue-800 dark:text-blue-200">WPM</p>
-          <p className="text-xl md:text-3xl font-bold text-blue-900 dark:text-blue-100">{calculateWPM()}</p>
+          <p className="text-xl md:text-3xl font-bold text-blue-900 dark:text-blue-100">{wpm}</p>
         </div>
         <div className="bg-green-100 dark:bg-green-800 p-4 rounded-lg shadow-md">
           <p className="text-sm md:text-lg font-medium text-green-800 dark:text-green-200">Accuracy</p>
@@ -89,7 +92,7 @@ const Results = () => {
       </div>
       <div className="mt-6 flex flex-col sm:flex-row justify-between items-center">
         <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-4 sm:mb-0">
-          <button
+        <button
             className="bg-blue-500 dark:bg-blue-600 text-white px-3 py-2 rounded-lg flex items-center transition-colors duration-300 hover:bg-blue-600 dark:hover:bg-blue-700 text-sm md:text-base"
             onClick={handleReset}
           >

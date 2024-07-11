@@ -9,7 +9,8 @@ import {
   incrementMistakes,
   incrementBackspaces,
   setUserEmail,
-  saveTestHistoryAsync
+  saveTestHistoryAsync,
+  calculateAndSetWPM
 } from '../store/typingSlice';
 
 const TypingArea = () => {
@@ -84,21 +85,15 @@ const TypingArea = () => {
 
   const handleTestCompletion = () => {
     if (userEmail) {
+      dispatch(calculateAndSetWPM());
       const testData = {
         email: userEmail,
-        wpm: calculateWPM(elapsedTime),
         accuracy: calculateAccuracy(),
         mistakes: mistakes,
         backspacesUsed: backspacesUsed,
       };
       dispatch(saveTestHistoryAsync(testData));
     }
-  };
-
-  const calculateWPM = (elapsedTime) => {
-    const minutes = elapsedTime / 60000;
-    const words = userInput.trim().split(/\s+/).length;
-    return Math.round(words / minutes);
   };
 
   const calculateAccuracy = () => {

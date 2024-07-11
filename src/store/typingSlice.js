@@ -1,18 +1,19 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { saveTestHistory, fetchTestHistory, fetchHighScore } from './api';
 
-const texts = [
-  "The quick brown fox jumps over the lazy dog.",
-  "To be or not to be, that is the question.",
-  "All that glitters is not gold.",
-  "A journey of a thousand miles begins with a single step.",
-  "Where there's a will, there's a way."
-];
+export const calculateWPM = (userInput, elapsedTime) => {
+  const minutes = elapsedTime / 60000;
+  const words = userInput.trim().split(/\s+/).length;
+  return Math.round(words / minutes);
+};
 
 export const saveTestHistoryAsync = createAsyncThunk(
   'typing/saveTestHistory',
-  async (testData) => {
-    const response = await saveTestHistory(testData);
+  async (testData, { getState, dispatch }) => {
+    const state = getState().typing;
+    const updatedTestData = { ...testData, wpm: state.wpm };
+    const response = await saveTestHistory(updatedTestData);
+    dispatch(fetchTestHistoryAsync(state.userEmail));
     return response;
   }
 );
@@ -33,6 +34,14 @@ export const fetchHighScoreAsync = createAsyncThunk(
   }
 );
 
+const texts = [
+  "The quick brown fox jumps over the lazy dog.",
+  "To be or not to be, that is the question.",
+  "All that glitters is not gold.",
+  "A journey of a thousand miles begins with a single step.",
+  "Where there's a will, there's a way."
+];
+
 const initialState = {
   texts,
   currentTextIndex: 0,
@@ -48,6 +57,7 @@ const initialState = {
   backspaceEnabled: true,
   backspacesUsed: 0,
   userEmail: null,
+  wpm: 0,
 };
 
 export const typingSlice = createSlice({
@@ -83,6 +93,7 @@ export const typingSlice = createSlice({
       state.mistakes = 0;
       state.completed = false;
       state.backspacesUsed = 0;
+      state.wpm = 0;
     },
     changeText: (state) => {
       state.currentTextIndex = (state.currentTextIndex + 1) % state.texts.length;
@@ -93,6 +104,7 @@ export const typingSlice = createSlice({
       state.mistakes = 0;
       state.completed = false;
       state.backspacesUsed = 0;
+      state.wpm = 0;
     },
     toggleDarkMode: (state) => {
       state.darkMode = !state.darkMode;
@@ -110,6 +122,9 @@ export const typingSlice = createSlice({
       state.userEmail = null;
       state.highScore = 0;
       state.testHistory = [];
+    },
+    calculateAndSetWPM: (state) => {
+      state.wpm = calculateWPM(state.userInput, state.elapsedTime);
     },
   },
   extraReducers: (builder) => {
@@ -139,6 +154,7 @@ export const {
   incrementBackspaces,
   setUserEmail,
   clearUserData,
+  calculateAndSetWPM,
 } = typingSlice.actions;
 
 export default typingSlice.reducer;
