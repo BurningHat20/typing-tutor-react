@@ -5,6 +5,22 @@ import { resetTest, changeText, toggleBackspace, fetchHighScoreAsync } from '../
 import { selectTypingResults } from '../store/selectors';
 import { FiRefreshCw, FiSkipForward, FiAward, FiDelete, FiTarget } from 'react-icons/fi';
 
+const colorClasses = {
+  blue: 'bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 text-blue-900 dark:text-blue-100',
+  green: 'bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200 text-green-900 dark:text-green-100',
+  yellow: 'bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 text-yellow-900 dark:text-yellow-100',
+  red: 'bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-200 text-red-900 dark:text-red-100',
+  indigo: 'bg-indigo-100 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200 text-indigo-900 dark:text-indigo-100',
+  purple: 'bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 text-purple-900 dark:text-purple-100',
+};
+
+const buttonColorClasses = {
+  blue: 'bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700',
+  green: 'bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700',
+  indigo: 'bg-indigo-500 dark:bg-indigo-600 hover:bg-indigo-600 dark:hover:bg-indigo-700',
+  gray: 'bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700',
+};
+
 const Results = () => {
   const { isSignedIn } = useUser();
   const dispatch = useDispatch();
@@ -73,18 +89,18 @@ const Results = () => {
 };
 
 const ResultBox = React.memo(({ label, value, color, icon }) => (
-  <div className={`bg-${color}-100 dark:bg-${color}-800 p-4 rounded-lg shadow-md`}>
-    <p className={`text-sm md:text-lg font-medium text-${color}-800 dark:text-${color}-200 flex items-center`}>
+  <div className={`${colorClasses[color]} p-4 rounded-lg shadow-md`}>
+    <p className="text-sm md:text-lg font-medium flex items-center">
       {icon && <span className="mr-2">{icon}</span>}
       {label}
     </p>
-    <p className={`text-xl md:text-3xl font-bold text-${color}-900 dark:text-${color}-100`}>{value}</p>
+    <p className="text-xl md:text-3xl font-bold">{value}</p>
   </div>
 ));
 
 const ActionButton = React.memo(({ onClick, icon, label, color }) => (
   <button
-    className={`bg-${color}-500 dark:bg-${color}-600 text-white px-3 py-2 rounded-lg flex items-center transition-colors duration-300 hover:bg-${color}-600 dark:hover:bg-${color}-700 text-sm md:text-base`}
+    className={`${buttonColorClasses[color]} text-white px-3 py-2 rounded-lg flex items-center transition-colors duration-300 text-sm md:text-base`}
     onClick={onClick}
   >
     <span className="mr-2">{icon}</span> {label}
