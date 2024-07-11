@@ -1,3 +1,4 @@
+// src/components/TypingArea.jsx
 import React, { useEffect, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useUser } from '@clerk/clerk-react';
@@ -10,7 +11,10 @@ import {
   incrementBackspaces,
   setUserEmail,
   saveTestHistoryAsync,
-  calculateAndSetWPM
+  calculateAndSetWPM,
+  setCurrentLesson,
+  changeText,
+  resetTest,
 } from '../store/typingSlice';
 import { selectTypingArea } from '../store/selectors';
 
@@ -27,7 +31,8 @@ const TypingArea = () => {
     userEmail,
     elapsedTime,
     mistakes,
-    backspacesUsed
+    backspacesUsed,
+    currentLesson
   } = useSelector(selectTypingArea);
   
   const text = texts[currentTextIndex];
@@ -93,10 +98,11 @@ const TypingArea = () => {
         accuracy: calculateAccuracy(),
         mistakes: mistakes,
         backspacesUsed: backspacesUsed,
+        lessonId: currentLesson,
       };
       dispatch(saveTestHistoryAsync(testData));
     }
-  }, [userEmail, mistakes, backspacesUsed, dispatch]);
+  }, [userEmail, mistakes, backspacesUsed, currentLesson, dispatch]);
 
   const calculateAccuracy = useCallback(() => {
     const totalChars = text.length;
@@ -124,18 +130,48 @@ const TypingArea = () => {
     });
   }, [text, userInput]);
 
+  const handleNextText = useCallback(() => {
+    dispatch(changeText());
+    dispatch(resetTest());
+  }, [dispatch]);
+
+  const handleFinishLesson = useCallback(() => {
+    dispatch(setCurrentLesson(null));
+  }, [dispatch]);
+
   if (!isSignedIn) {
     return <div className="text-center mt-8">Please sign in to start typing.</div>;
   }
 
+  if (!currentLesson) {
+    return <div className="text-center mt-8">Please select a lesson to start typing.</div>;
+  }
+
   return (
-    <div 
-      ref={containerRef}
-      className="mt-4 text-lg font-mono p-6 border-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 dark:text-white dark:border-gray-700"
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-    >
-      {renderText()}
+    <div className="mt-4">
+      <div 
+        ref={containerRef}
+        className="text-lg font-mono p-6 border-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 dark:text-white dark:border-gray-700"
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+      >
+        {renderText()}
+      </div>
+      <div className="mt-4 flex justify-between">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={handleNextText}
+          disabled={currentTextIndex === texts.length - 1}
+        >
+          Next Text
+        </button>
+        <button
+          className="bg-green-500 text-white px-4 py-2 rounded"
+          onClick={handleFinishLesson}
+        >
+          Finish Lesson
+        </button>
+      </div>
     </div>
   );
 };

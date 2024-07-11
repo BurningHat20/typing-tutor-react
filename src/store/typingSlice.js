@@ -1,3 +1,4 @@
+// src/store/typingSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { saveTestHistory, fetchTestHistory, fetchHighScore } from './api';
 
@@ -34,16 +35,26 @@ export const fetchHighScoreAsync = createAsyncThunk(
   }
 );
 
-const texts = [
-  "The quick brown fox jumps over the lazy dog.",
-  "To be or not to be, that is the question.",
-  "All that glitters is not gold.",
-  "A journey of a thousand miles begins with a single step.",
-  "Where there's a will, there's a way."
-];
+const lessons = {
+  basic: [
+    "The quick brown fox jumps over the lazy dog.",
+    "A journey of a thousand miles begins with a single step.",
+    "Practice makes perfect.",
+  ],
+  intermediate: [
+    "To be or not to be, that is the question.",
+    "All that glitters is not gold.",
+    "Where there's a will, there's a way.",
+  ],
+  advanced: [
+    "The only way to do great work is to love what you do.",
+    "In the end, it's not the years in your life that count. It's the life in your years.",
+    "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+  ],
+};
 
 const initialState = {
-  texts,
+  texts: [],
   currentTextIndex: 0,
   userInput: '',
   startTime: null,
@@ -58,6 +69,7 @@ const initialState = {
   backspacesUsed: 0,
   userEmail: null,
   wpm: 0,
+  currentLesson: null,
 };
 
 export const typingSlice = createSlice({
@@ -126,6 +138,11 @@ export const typingSlice = createSlice({
     calculateAndSetWPM: (state) => {
       state.wpm = calculateWPM(state.userInput, state.elapsedTime);
     },
+    setCurrentLesson: (state, action) => {
+      state.currentLesson = action.payload;
+      state.texts = lessons[action.payload] || [];
+      state.currentTextIndex = 0;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -155,6 +172,7 @@ export const {
   setUserEmail,
   clearUserData,
   calculateAndSetWPM,
+  setCurrentLesson,
 } = typingSlice.actions;
 
 export default typingSlice.reducer;

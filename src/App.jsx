@@ -1,8 +1,7 @@
 // src/App.jsx
 import React, { useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
-import { Provider } from 'react-redux';
-import { useSelector } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { store } from './store/store';
 import TypingArea from './components/TypingArea';
 import Results from './components/Results';
@@ -10,10 +9,12 @@ import TestHistory from './components/TestHistory';
 import DarkModeToggle from './components/DarkModeToggle';
 import UserButton from './components/UserButton';
 import LandingPage from './components/LandingPage';
+import LessonSelector from './components/LessonSelector';
 
 function AppContent() {
   const { isSignedIn, isLoaded } = useUser();
   const darkMode = useSelector((state) => state.typing.darkMode);
+  const currentLesson = useSelector((state) => state.typing.currentLesson);
 
   useEffect(() => {
     if (darkMode) {
@@ -42,8 +43,14 @@ function AppContent() {
           </div>
         </header>
         <main>
-          <TypingArea />
-          <Results />
+          {!currentLesson ? (
+            <LessonSelector />
+          ) : (
+            <>
+              <TypingArea />
+              <Results />
+            </>
+          )}
           <TestHistory />
         </main>
         <footer className="mt-12 text-center text-gray-500 dark:text-gray-400">
