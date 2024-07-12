@@ -1,6 +1,7 @@
+// src/components/DarkModeToggle.jsx
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { toggleDarkMode } from '../store/typingSlice';
+import { setDarkMode } from '../store/typingSlice';
 import { FiMoon, FiSun } from 'react-icons/fi';
 
 const DarkModeToggle = () => {
@@ -16,7 +17,8 @@ const DarkModeToggle = () => {
   }, [darkMode]);
 
   const handleToggle = () => {
-    dispatch(toggleDarkMode());
+    dispatch(setDarkMode(!darkMode));
+    localStorage.setItem('userTheme', !darkMode ? 'dark' : 'light');
   };
 
   return (

@@ -1,8 +1,9 @@
 // src/App.jsx
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, Link } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
 import { Provider, useSelector, useDispatch } from 'react-redux';
+import { FaBars, FaTimes } from 'react-icons/fa';
 import { store } from './store/store';
 import TypingArea from './components/TypingArea';
 import Results from './components/Results';
@@ -11,9 +12,8 @@ import DarkModeToggle from './components/DarkModeToggle';
 import UserButton from './components/UserButton';
 import LandingPage from './components/LandingPage';
 import LessonSelector from './components/LessonSelector';
-import Navbar from './components/Navbar';
 import Loader from './components/Loader';
-import { setCurrentLesson } from './store/typingSlice'; // Assume this action exists
+import { setCurrentLesson, setDarkMode } from './store/typingSlice';
 
 function AppContent() {
   const { isSignedIn, isLoaded } = useUser();
@@ -21,6 +21,29 @@ function AppContent() {
   const currentLesson = useSelector((state) => state.typing.currentLesson);
   const location = useLocation();
   const dispatch = useDispatch();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    // Detect system theme and set initial theme
+    const userTheme = localStorage.getItem('userTheme');
+    if (userTheme) {
+      dispatch(setDarkMode(userTheme === 'dark'));
+    } else {
+      const systemDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      dispatch(setDarkMode(systemDarkMode));
+    }
+
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e) => {
+      if (!localStorage.getItem('userTheme')) {
+        dispatch(setDarkMode(e.matches));
+      }
+    };
+    mediaQuery.addListener(handleChange);
+
+    return () => mediaQuery.removeListener(handleChange);
+  }, [dispatch]);
 
   useEffect(() => {
     if (darkMode) {
@@ -49,22 +72,66 @@ function AppContent() {
     return <div className="flex justify-center items-center h-screen"><Loader/></div>;
   }
 
-  const showNavbar = isSignedIn && location.pathname !== '/';
+  const showHeader = isSignedIn && location.pathname !== '/';
   const isLandingPage = location.pathname === '/';
 
   return (
     <div className={`min-h-screen w-full ${!isLandingPage ? 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white' : ''} transition-colors duration-300`}>
       <div className={`${!isLandingPage ? 'container mx-auto px-4 py-8' : ''}`}>
-        {!isLandingPage && (
-          <header className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400">RED Labz</h1>
-            <div className="flex items-center space-x-4">
-              <DarkModeToggle />
-              <UserButton />
+        {showHeader && (
+          <header className="mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="flex items-center justify-between w-full md:w-auto">
+                <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400">RED Labz</h1>
+                <button
+                  className="md:hidden text-blue-500 dark:text-blue-300"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                  {isMenuOpen ? (
+                    <FaTimes className="h-6 w-6" />
+                  ) : (
+                    <FaBars className="h-6 w-6" />
+                  )}
+                </button>
+              </div>
+              <nav className={`${isMenuOpen ? 'block' : 'hidden'} md:block w-full md:w-auto mt-4 md:mt-0`}>
+                <ul className="flex flex-col md:flex-row md:space-x-8 space-y-2 md:space-y-0">
+                  <li>
+                    <Link
+                      to="/lessons"
+                      className={`text-xl hover:text-blue-700 ${location.pathname === '/lessons' ? 'font-bold' : ''} text-blue-500 dark:text-blue-300`}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Lessons
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/history"
+                      className={`text-xl hover:text-blue-700 ${location.pathname === '/history' ? 'font-bold' : ''} text-blue-500 dark:text-blue-300`}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      History
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/typing"
+                      className={`text-xl hover:text-blue-700 ${location.pathname === '/typing' ? 'font-bold' : ''} text-blue-500 dark:text-blue-300`}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Typing
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
+              <div className="flex items-center space-x-4 mt-4 md:mt-0">
+                <DarkModeToggle />
+                <UserButton />
+              </div>
             </div>
           </header>
         )}
-        {showNavbar && <Navbar />}
         <main>
           <Routes>
             <Route 

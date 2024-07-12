@@ -97,6 +97,9 @@ export const typingSlice = createSlice({
         state.startTime = Date.now();
       }
     },
+    setDarkMode: (state, action) => {
+      state.darkMode = action.payload;
+    },
     updateTimer: (state) => {
       if (state.startTime && !state.completed) {
         state.elapsedTime = Date.now() - state.startTime;
@@ -171,6 +174,7 @@ export const {
   toggleBackspace,
   incrementBackspaces,
   setUserEmail,
+  setDarkMode, 
   clearUserData,
   calculateAndSetWPM,
   setCurrentLesson,

@@ -145,33 +145,28 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <motion.section 
-      className="py-20 bg-gradient-to-br from-indigo-800 via-purple-700 to-pink-600"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <section className="py-20 bg-gray-800">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl font-bold text-center mb-12 text-white">Elevate Your Typing Skills</h2>
         <div className="grid md:grid-cols-2 gap-8">
           {features.map((feature, index) => (
             <motion.div 
               key={index}
-              className="bg-white bg-opacity-10 rounded-lg p-6 shadow-lg flex items-start"
+              className="bg-gray-700 rounded-lg p-6 shadow-lg flex items-start"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <div className="text-3xl mr-4 text-purple-300">{feature.icon}</div>
+              <div className="text-3xl mr-4 text-blue-400">{feature.icon}</div>
               <div>
                 <h3 className="text-xl font-semibold mb-2 text-white">{feature.title}</h3>
-                <p className="text-purple-200">{feature.description}</p>
+                <p className="text-gray-300">{feature.description}</p>
               </div>
             </motion.div>
           ))}
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 };
 
@@ -183,32 +178,27 @@ const TestimonialsSection = () => {
   ];
 
   return (
-    <motion.section 
-      className="py-20 bg-gradient-to-br from-purple-800 via-indigo-700 to-pink-600"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <section className="py-20 bg-gray-900">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl font-bold text-center mb-12 text-white">What Our Users Say</h2>
         <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
             <motion.div 
               key={index}
-              className="bg-white bg-opacity-10 rounded-lg p-6 shadow-lg relative"
+              className="bg-gray-800 rounded-lg p-6 shadow-lg relative"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.2 }}
             >
-              <FaQuoteLeft className="text-4xl text-purple-300 absolute top-4 left-4" />
-              <p className="text-white mb-4 relative z-10 pt-8">"{testimonial.text}"</p>
-              <div className="font-semibold text-purple-200">{testimonial.name}</div>
-              <div className="text-sm text-pink-300">{testimonial.role}</div>
+              <FaQuoteLeft className="text-4xl text-blue-400 absolute top-4 left-4" />
+              <p className="text-gray-300 mb-4 relative z-10 pt-8">"{testimonial.text}"</p>
+              <div className="font-semibold text-white">{testimonial.name}</div>
+              <div className="text-sm text-gray-400">{testimonial.role}</div>
             </motion.div>
           ))}
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 };
 
@@ -220,52 +210,47 @@ const PricingSection = () => {
   ];
 
   return (
-    <motion.section 
-      className="py-20 bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <section className="py-20 bg-gray-800">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl font-bold text-center mb-12 text-white">Choose Your Plan</h2>
         <div className="grid md:grid-cols-3 gap-8">
           {plans.map((plan, index) => (
             <motion.div 
               key={index}
-              className="bg-white bg-opacity-10 rounded-lg p-6 shadow-lg border border-purple-400"
+              className="bg-gray-700 rounded-lg p-6 shadow-lg border border-gray-600"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
               <h3 className="text-2xl font-bold mb-4 text-white">{plan.name}</h3>
-              <div className="text-4xl font-bold mb-6 text-purple-300">{plan.price}</div>
+              <div className="text-4xl font-bold mb-6 text-blue-400">{plan.price}</div>
               <ul className="mb-8">
                 {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-center mb-2 text-purple-200">
+                  <li key={i} className="flex items-center mb-2 text-gray-300">
                     <FaCheck className="text-green-400 mr-2" />
                     <span>{feature}</span>
                   </li>
                 ))}
               </ul>
-              <button className="w-full bg-purple-500 text-white font-bold py-2 px-4 rounded hover:bg-purple-600 transition duration-300">
+              <button className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-300">
                 Choose Plan
               </button>
             </motion.div>
           ))}
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 };  
 
 const Footer = () => (
-  <footer className="bg-indigo-900 py-8">
+  <footer className="bg-gray-900 py-8">
     <div className="container mx-auto px-4 text-center">
-      <p className="text-purple-200">© 2023 Pro Typing Tutor. All rights reserved.</p>
+      <p className="text-gray-400">© 2023 Pro Typing Tutor. All rights reserved.</p>
       <div className="mt-4 space-x-4">
-        <a href="#" className="text-purple-200 hover:text-white">Terms of Service</a>
-        <a href="#" className="text-purple-200 hover:text-white">Privacy Policy</a>
-        <a href="#" className="text-purple-200 hover:text-white">Contact Us</a>
+        <a href="#" className="text-gray-400 hover:text-white">Terms of Service</a>
+        <a href="#" className="text-gray-400 hover:text-white">Privacy Policy</a>
+        <a href="#" className="text-gray-400 hover:text-white">Contact Us</a>
       </div>
     </div>
   </footer>
