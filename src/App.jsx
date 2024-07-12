@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
-import { Provider, useSelector } from 'react-redux';
+import { Provider, useSelector, useDispatch } from 'react-redux';
 import { store } from './store/store';
 import TypingArea from './components/TypingArea';
 import Results from './components/Results';
@@ -13,12 +13,14 @@ import LandingPage from './components/LandingPage';
 import LessonSelector from './components/LessonSelector';
 import Navbar from './components/Navbar';
 import Loader from './components/Loader';
+import { setCurrentLesson } from './store/typingSlice'; // Assume this action exists
 
 function AppContent() {
   const { isSignedIn, isLoaded } = useUser();
   const darkMode = useSelector((state) => state.typing.darkMode);
   const currentLesson = useSelector((state) => state.typing.currentLesson);
   const location = useLocation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (darkMode) {
@@ -27,6 +29,21 @@ function AppContent() {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  useEffect(() => {
+    // Retrieve currentLesson from localStorage on component mount
+    const savedLesson = localStorage.getItem('currentLesson');
+    if (savedLesson) {
+      dispatch(setCurrentLesson(JSON.parse(savedLesson)));
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    // Save currentLesson to localStorage whenever it changes
+    if (currentLesson) {
+      localStorage.setItem('currentLesson', JSON.stringify(currentLesson));
+    }
+  }, [currentLesson]);
 
   if (!isLoaded) {
     return <div className="flex justify-center items-center h-screen"><Loader/></div>;
@@ -40,7 +57,7 @@ function AppContent() {
       <div className={`${!isLandingPage ? 'container mx-auto px-4 py-8' : ''}`}>
         {!isLandingPage && (
           <header className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400">Pro Typing Tutor</h1>
+            <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400">RED Labz</h1>
             <div className="flex items-center space-x-4">
               <DarkModeToggle />
               <UserButton />
@@ -50,7 +67,10 @@ function AppContent() {
         {showNavbar && <Navbar />}
         <main>
           <Routes>
-            <Route path="/" element={!isSignedIn ? <LandingPage /> : <Navigate to="/lessons" />} />
+            <Route 
+              path="/" 
+              element={!isSignedIn ? <LandingPage /> : <Navigate to="/lessons" />} 
+            />
             <Route 
               path="/lessons" 
               element={isSignedIn ? <LessonSelector /> : <Navigate to="/" />} 
@@ -58,13 +78,17 @@ function AppContent() {
             <Route 
               path="/typing" 
               element={
-                isSignedIn && currentLesson ? (
-                  <>
-                    <TypingArea />
-                    <Results />
-                  </>
+                isSignedIn ? (
+                  currentLesson ? (
+                    <>
+                      <TypingArea />
+                      <Results />
+                    </>
+                  ) : (
+                    <Navigate to="/lessons" />
+                  )
                 ) : (
-                  <Navigate to="/lessons" />
+                  <Navigate to="/" />
                 )
               } 
             />
