@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useUser } from '@clerk/clerk-react';
+import { useNavigate } from 'react-router-dom';
 import {
   setUserInput,
   startTimer,
@@ -22,6 +23,7 @@ import { selectTypingArea } from '../store/selectors';
 const TypingArea = () => {
   const { isSignedIn, user } = useUser();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { 
     texts, 
     currentTextIndex, 
@@ -137,7 +139,8 @@ const TypingArea = () => {
   const handleFinishLesson = useCallback(() => {
     dispatch(setCurrentLesson(null));
     dispatch(resetLesson());
-  }, [dispatch]);
+    navigate('/lessons');
+  }, [dispatch, navigate]);
 
   const handleRestartLesson = useCallback(() => {
     dispatch(resetLesson());

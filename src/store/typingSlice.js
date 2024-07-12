@@ -34,7 +34,7 @@ export const fetchHighScoreAsync = createAsyncThunk(
 
 const lessons = {
   basic: [
-    "The quick brown fox jumps over the lazy dog.",
+    "The integration of technology in education has significantly transformed learning experiences, making them more interactive and accessible. Online platforms and digital tools have revolutionized the way knowledge is imparted and absorbed, allowing students to learn at their own pace and convenience. One notable advancement is the development of typing tutor applications, which play a crucial role in enhancing typing skills—a fundamental aspect of digital literacy. These applications not only provide interactive lessons but also track progress and offer personalized feedback, ensuring users continuously improve their typing speed and accuracy. ",
     "A journey of a thousand miles begins with a single step.",
     "Practice makes perfect.",
   ],

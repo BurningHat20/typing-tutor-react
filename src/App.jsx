@@ -1,5 +1,6 @@
 // src/App.jsx
 import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
 import { Provider, useSelector } from 'react-redux';
 import { store } from './store/store';
@@ -10,6 +11,7 @@ import DarkModeToggle from './components/DarkModeToggle';
 import UserButton from './components/UserButton';
 import LandingPage from './components/LandingPage';
 import LessonSelector from './components/LessonSelector';
+import Navbar from './components/Navbar';
 
 function AppContent() {
   const { isSignedIn, isLoaded } = useUser();
@@ -28,10 +30,6 @@ function AppContent() {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
 
-  if (!isSignedIn) {
-    return <LandingPage />;
-  }
-
   return (
     <div className="min-h-screen w-full bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white transition-colors duration-300">
       <div className="container mx-auto px-4 py-8">
@@ -42,16 +40,32 @@ function AppContent() {
             <UserButton />
           </div>
         </header>
+        {isSignedIn && <Navbar />}
         <main>
-          {!currentLesson ? (
-            <LessonSelector />
-          ) : (
-            <>
-              <TypingArea />
-              <Results />
-            </>
-          )}
-          <TestHistory />
+          <Routes>
+            <Route path="/" element={!isSignedIn ? <LandingPage /> : <Navigate to="/lessons" />} />
+            <Route 
+              path="/lessons" 
+              element={isSignedIn ? <LessonSelector /> : <Navigate to="/" />} 
+            />
+            <Route 
+              path="/typing" 
+              element={
+                isSignedIn && currentLesson ? (
+                  <>
+                    <TypingArea />
+                    <Results />
+                  </>
+                ) : (
+                  <Navigate to="/lessons" />
+                )
+              } 
+            />
+            <Route 
+              path="/history" 
+              element={isSignedIn ? <TestHistory /> : <Navigate to="/" />} 
+            />
+          </Routes>
         </main>
         <footer className="mt-12 text-center text-gray-500 dark:text-gray-400">
           <p>&copy; 2024 Pro Typing Tutor. All rights reserved.</p>
@@ -64,7 +78,9 @@ function AppContent() {
 function App() {
   return (
     <Provider store={store}>
-      <AppContent />
+      <Router>
+        <AppContent />
+      </Router>
     </Provider>
   );
 }

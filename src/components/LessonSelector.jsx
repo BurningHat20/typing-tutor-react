@@ -1,6 +1,7 @@
 // src/components/LessonSelector.jsx
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { setCurrentLesson } from '../store/typingSlice';
 
 const lessons = [
@@ -11,6 +12,12 @@ const lessons = [
 
 const LessonSelector = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLessonSelect = (lessonId) => {
+    dispatch(setCurrentLesson(lessonId));
+    navigate('/typing');
+  };
 
   return (
     <div className="mt-8">
@@ -20,7 +27,7 @@ const LessonSelector = () => {
           <button
             key={lesson.id}
             className="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-lg transition-colors duration-200"
-            onClick={() => dispatch(setCurrentLesson(lesson.id))}
+            onClick={() => handleLessonSelect(lesson.id)}
           >
             {lesson.name}
           </button>
