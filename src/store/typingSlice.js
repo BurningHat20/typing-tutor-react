@@ -11,20 +11,17 @@ export const calculateWPM = (userInput, elapsedTime) => {
 export const saveTestHistoryAsync = createAsyncThunk(
   'typing/saveTestHistory',
   async (testData, { getState, dispatch }) => {
-    const state = getState().typing;
-    const updatedTestData = { ...testData, wpm: state.wpm };
+    const { wpm, userEmail } = getState().typing;
+    const updatedTestData = { ...testData, wpm };
     const response = await saveTestHistory(updatedTestData);
-    dispatch(fetchTestHistoryAsync(state.userEmail));
+    dispatch(fetchTestHistoryAsync(userEmail));
     return response;
   }
 );
 
 export const fetchTestHistoryAsync = createAsyncThunk(
   'typing/fetchTestHistory',
-  async (email) => {
-    const response = await fetchTestHistory(email);
-    return response;
-  }
+  async (email) => await fetchTestHistory(email)
 );
 
 export const fetchHighScoreAsync = createAsyncThunk(
@@ -72,6 +69,22 @@ const initialState = {
   currentLesson: null,
 };
 
+const resetTestState = (state) => {
+  state.userInput = '';
+  state.startTime = null;
+  state.endTime = null;
+  state.elapsedTime = 0;
+  state.mistakes = 0;
+  state.completed = false;
+  state.backspacesUsed = 0;
+  state.wpm = 0;
+};
+
+const resetLessonState = (state) => {
+  resetTestState(state);
+  state.currentTextIndex = 0;
+};
+
 export const typingSlice = createSlice({
   name: 'typing',
   initialState,
@@ -97,26 +110,10 @@ export const typingSlice = createSlice({
     incrementMistakes: (state) => {
       state.mistakes += 1;
     },
-    resetTest: (state) => {
-      state.userInput = '';
-      state.startTime = null;
-      state.endTime = null;
-      state.elapsedTime = 0;
-      state.mistakes = 0;
-      state.completed = false;
-      state.backspacesUsed = 0;
-      state.wpm = 0;
-    },
+    resetTest: resetTestState,
     changeText: (state) => {
       state.currentTextIndex = (state.currentTextIndex + 1) % state.texts.length;
-      state.userInput = '';
-      state.startTime = null;
-      state.endTime = null;
-      state.elapsedTime = 0;
-      state.mistakes = 0;
-      state.completed = false;
-      state.backspacesUsed = 0;
-      state.wpm = 0;
+      resetTestState(state);
     },
     toggleDarkMode: (state) => {
       state.darkMode = !state.darkMode;
@@ -139,10 +136,14 @@ export const typingSlice = createSlice({
       state.wpm = calculateWPM(state.userInput, state.elapsedTime);
     },
     setCurrentLesson: (state, action) => {
-      state.currentLesson = action.payload;
-      state.texts = lessons[action.payload] || [];
-      state.currentTextIndex = 0;
+      const newLesson = action.payload;
+      if (newLesson !== state.currentLesson) {
+        state.currentLesson = newLesson;
+        state.texts = lessons[newLesson] || [];
+        resetLessonState(state);
+      }
     },
+    resetLesson: resetLessonState,
   },
   extraReducers: (builder) => {
     builder
@@ -173,6 +174,7 @@ export const {
   clearUserData,
   calculateAndSetWPM,
   setCurrentLesson,
+  resetLesson,
 } = typingSlice.actions;
 
 export default typingSlice.reducer;

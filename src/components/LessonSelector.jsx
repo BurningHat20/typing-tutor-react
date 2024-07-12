@@ -12,10 +12,6 @@ const lessons = [
 const LessonSelector = () => {
   const dispatch = useDispatch();
 
-  const handleLessonSelect = (lessonId) => {
-    dispatch(setCurrentLesson(lessonId));
-  };
-
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-4">Select a Lesson</h2>
@@ -23,8 +19,8 @@ const LessonSelector = () => {
         {lessons.map((lesson) => (
           <button
             key={lesson.id}
-            className="bg-blue-500 text-white p-4 rounded-lg"
-            onClick={() => handleLessonSelect(lesson.id)}
+            className="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-lg transition-colors duration-200"
+            onClick={() => dispatch(setCurrentLesson(lesson.id))}
           >
             {lesson.name}
           </button>

@@ -15,6 +15,7 @@ import {
   setCurrentLesson,
   changeText,
   resetTest,
+  resetLesson,
 } from '../store/typingSlice';
 import { selectTypingArea } from '../store/selectors';
 
@@ -45,16 +46,14 @@ const TypingArea = () => {
   }, [isSignedIn, user, dispatch]);
 
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.focus();
-    }
+    containerRef.current?.focus();
   }, [currentTextIndex]);
 
   useEffect(() => {
     if (userInput.length === 1) {
       dispatch(startTimer());
     }
-    if (userInput.length === text.length && !completed) {
+    if (userInput.length === text?.length && !completed) {
       dispatch(endTimer());
       handleTestCompletion();
     }
@@ -96,8 +95,8 @@ const TypingArea = () => {
       const testData = {
         email: userEmail,
         accuracy: calculateAccuracy(),
-        mistakes: mistakes,
-        backspacesUsed: backspacesUsed,
+        mistakes,
+        backspacesUsed,
         lessonId: currentLesson,
       };
       dispatch(saveTestHistoryAsync(testData));
@@ -105,13 +104,13 @@ const TypingArea = () => {
   }, [userEmail, mistakes, backspacesUsed, currentLesson, dispatch]);
 
   const calculateAccuracy = useCallback(() => {
-    const totalChars = text.length;
+    const totalChars = text?.length || 0;
     const correctChars = totalChars - mistakes;
     return Math.round((correctChars / totalChars) * 100);
   }, [text, mistakes]);
 
   const renderText = useCallback(() => {
-    return text.split('').map((char, index) => {
+    return text?.split('').map((char, index) => {
       let className = 'text-gray-500 dark:text-gray-400';
       if (index < userInput.length) {
         className = char === userInput[index] ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400';
@@ -137,6 +136,11 @@ const TypingArea = () => {
 
   const handleFinishLesson = useCallback(() => {
     dispatch(setCurrentLesson(null));
+    dispatch(resetLesson());
+  }, [dispatch]);
+
+  const handleRestartLesson = useCallback(() => {
+    dispatch(resetLesson());
   }, [dispatch]);
 
   if (!isSignedIn) {
@@ -149,6 +153,9 @@ const TypingArea = () => {
 
   return (
     <div className="mt-4">
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+        Text {currentTextIndex + 1} of {texts.length}
+      </p>
       <div 
         ref={containerRef}
         className="text-lg font-mono p-6 border-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 dark:text-white dark:border-gray-700"
@@ -159,14 +166,20 @@ const TypingArea = () => {
       </div>
       <div className="mt-4 flex justify-between">
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
           onClick={handleNextText}
           disabled={currentTextIndex === texts.length - 1}
         >
-          Next Text
+          {currentTextIndex === texts.length - 1 ? "Lesson Complete" : "Next Text"}
         </button>
         <button
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded transition-colors duration-200"
+          onClick={handleRestartLesson}
+        >
+          Restart Lesson
+        </button>
+        <button
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition-colors duration-200"
           onClick={handleFinishLesson}
         >
           Finish Lesson
