@@ -11,7 +11,7 @@ const Navbar = () => {
         <li>
           <Link 
             to="/lessons" 
-            className={`text-blue-500 hover:text-blue-700 ${location.pathname === '/lessons' ? 'font-bold' : ''}`}
+            className={`text-blue-500 text-xl hover:text-blue-700  ${location.pathname === '/lessons' ? 'font-bold' : ''}`}
           >
             Lessons
           </Link>
@@ -19,9 +19,17 @@ const Navbar = () => {
         <li>
           <Link 
             to="/history" 
-            className={`text-blue-500 hover:text-blue-700 ${location.pathname === '/history' ? 'font-bold' : ''}`}
+            className={`text-blue-500 text-xl hover:text-blue-700 ${location.pathname === '/history' ? 'font-bold' : ''}`}
           >
             History
+          </Link>
+        </li>
+        <li>
+          <Link 
+            to="/typing" 
+            className={`text-blue-500 text-xl hover:text-blue-700 ${location.pathname === '/typing' ? 'font-bold' : ''}`}
+          >
+            Typing
           </Link>
         </li>
       </ul>

@@ -76,7 +76,7 @@ const Results = () => {
       </div>
       <div className="mt-6 flex flex-wrap justify-center gap-4">
         <ActionButton onClick={handleReset} icon={<FiRefreshCw />} label="Reset Test" color="blue" />
-        {/* <ActionButton onClick={handleChangeText} icon={<FiSkipForward />} label="Next Text" color="green" /> */}
+    
         <ActionButton 
           onClick={handleToggleBackspace} 
           icon={<FiDelete />} 

@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
 import { Provider, useSelector } from 'react-redux';
 import { store } from './store/store';
@@ -12,11 +12,13 @@ import UserButton from './components/UserButton';
 import LandingPage from './components/LandingPage';
 import LessonSelector from './components/LessonSelector';
 import Navbar from './components/Navbar';
+import Loader from './components/Loader';
 
 function AppContent() {
   const { isSignedIn, isLoaded } = useUser();
   const darkMode = useSelector((state) => state.typing.darkMode);
   const currentLesson = useSelector((state) => state.typing.currentLesson);
+  const location = useLocation();
 
   useEffect(() => {
     if (darkMode) {
@@ -27,20 +29,25 @@ function AppContent() {
   }, [darkMode]);
 
   if (!isLoaded) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return <div className="flex justify-center items-center h-screen"><Loader/></div>;
   }
 
+  const showNavbar = isSignedIn && location.pathname !== '/';
+  const isLandingPage = location.pathname === '/';
+
   return (
-    <div className="min-h-screen w-full bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white transition-colors duration-300">
-      <div className="container mx-auto px-4 py-8">
-        <header className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400">Pro Typing Tutor</h1>
-          <div className="flex items-center space-x-4">
-            <DarkModeToggle />
-            <UserButton />
-          </div>
-        </header>
-        {isSignedIn && <Navbar />}
+    <div className={`min-h-screen w-full ${!isLandingPage ? 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white' : ''} transition-colors duration-300`}>
+      <div className={`${!isLandingPage ? 'container mx-auto px-4 py-8' : ''}`}>
+        {!isLandingPage && (
+          <header className="flex justify-between items-center mb-8">
+            <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400">Pro Typing Tutor</h1>
+            <div className="flex items-center space-x-4">
+              <DarkModeToggle />
+              <UserButton />
+            </div>
+          </header>
+        )}
+        {showNavbar && <Navbar />}
         <main>
           <Routes>
             <Route path="/" element={!isSignedIn ? <LandingPage /> : <Navigate to="/lessons" />} />
@@ -67,9 +74,11 @@ function AppContent() {
             />
           </Routes>
         </main>
-        <footer className="mt-12 text-center text-gray-500 dark:text-gray-400">
-          <p>&copy; 2024 Pro Typing Tutor. All rights reserved.</p>
-        </footer>
+        {!isLandingPage && (
+          <footer className="mt-12 text-center text-gray-500 dark:text-gray-400">
+            <p>&copy; 2024 Pro Typing Tutor. All rights reserved.</p>
+          </footer>
+        )}
       </div>
     </div>
   );
