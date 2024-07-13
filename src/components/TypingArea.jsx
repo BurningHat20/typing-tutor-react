@@ -17,6 +17,7 @@ import {
   changeText,
   resetTest,
   resetLesson,
+  updateHighScore
 } from '../store/typingSlice';
 import { selectTypingArea } from '../store/selectors';
 
@@ -102,6 +103,7 @@ const TypingArea = () => {
         lessonId: currentLesson,
       };
       dispatch(saveTestHistoryAsync(testData));
+      dispatch(updateHighScore()); // Add this line
     }
   }, [userEmail, mistakes, backspacesUsed, currentLesson, dispatch]);
 

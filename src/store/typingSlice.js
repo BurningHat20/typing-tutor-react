@@ -3,10 +3,20 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { saveTestHistory, fetchTestHistory, fetchHighScore } from './api';
 
 export const calculateWPM = (userInput, elapsedTime) => {
-  const minutes = elapsedTime / 60000;
-  const words = userInput.trim().split(/\s+/).length;
-  return Math.round(words / minutes);
+  const minutes = elapsedTime / 60000; // Convert milliseconds to minutes
+  const charCount = userInput.length;
+  const wpm = (charCount / 5) / minutes; // Divide char count by 5 to get word count
+  return Math.round(wpm);
 };
+
+export const updateHighScore = createAsyncThunk(
+  'typing/updateHighScore',
+  async (_, { getState }) => {
+    const { wpm, userEmail } = getState().typing;
+    const response = await fetchHighScore(userEmail);
+    return Math.max(wpm, response.highScore);
+  }
+);
 
 export const saveTestHistoryAsync = createAsyncThunk(
   'typing/saveTestHistory',
@@ -15,6 +25,7 @@ export const saveTestHistoryAsync = createAsyncThunk(
     const updatedTestData = { ...testData, wpm };
     const response = await saveTestHistory(updatedTestData);
     dispatch(fetchTestHistoryAsync(userEmail));
+    dispatch(updateHighScore());
     return response;
   }
 );
@@ -157,6 +168,9 @@ export const typingSlice = createSlice({
         console.log('Test history saved successfully');
       })
       .addCase(fetchHighScoreAsync.fulfilled, (state, action) => {
+        state.highScore = action.payload;
+      })
+      .addCase(updateHighScore.fulfilled, (state, action) => {
         state.highScore = action.payload;
       });
   },

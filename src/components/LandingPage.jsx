@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaKeyboard, FaChartLine, FaTrophy, FaArrowRight, FaUser, FaQuoteLeft, FaRocket, FaCheck } from 'react-icons/fa';
+import { motion, AnimatePresence,  useAnimation } from 'framer-motion';
+import { FaKeyboard, FaChartLine, FaTrophy, FaArrowRight,  FaQuoteLeft, FaRocket, FaCheck } from 'react-icons/fa';
 import { SignInButton, SignUpButton, useUser } from '@clerk/clerk-react';
 
 const LandingPage = () => {
@@ -21,7 +21,7 @@ const LandingPage = () => {
 const Header = ({ isSignedIn, user }) => (
   <header className="bg-transparent py-4 absolute top-0 left-0 right-0 z-10">
     <nav className="container mx-auto px-4 flex justify-between items-center">
-      <div className="text-2xl font-bold">Pro Typing Tutor</div>
+      <div className="text-2xl font-bold">RED Labz</div>
       <div>
         {isSignedIn ? (
           <span>Welcome, {user.firstName}!</span>
@@ -52,11 +52,11 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden text-center">
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <motion.div
-          className="absolute inset-0 flex items-center justify-center text-[400px] font-bold text-white opacity-5"
+          className="absolute inset-0 flex items-center justify-center text-[15vw] md:text-[400px] font-bold text-white opacity-5"
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 0.05 }}
           transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
@@ -64,10 +64,10 @@ const HeroSection = () => {
           {words[currentWordIndex]}
         </motion.div>
       </div>
-      
-      <div className="container mx-auto px-4 z-10 text-center">
+
+      <div className="container mx-auto px-4 z-10">
         <motion.h1 
-          className="text-6xl font-bold mb-6"
+          className="text-4xl md:text-6xl font-bold mb-6"
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -75,7 +75,7 @@ const HeroSection = () => {
           Master the Art of Typing
         </motion.h1>
         <motion.p 
-          className="text-2xl mb-8"
+          className="text-xl md:text-2xl mb-8"
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -95,16 +95,18 @@ const HeroSection = () => {
           </AnimatePresence>
           in your typing
         </motion.p>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-purple-500 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-purple-600 transition duration-300"
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          Start Typing Now <FaArrowRight className="inline-block ml-2" />
-        </motion.button>
+        <SignInButton mode="modal">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-purple-500 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-purple-600 transition duration-300"
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            Start Typing Now <FaArrowRight className="inline-block ml-2" />
+          </motion.button>
+        </SignInButton>
       </div>
 
       <KeyboardAnimation />
@@ -112,29 +114,92 @@ const HeroSection = () => {
   );
 };
 
+
 const KeyboardAnimation = () => {
+  const keys = ['Q', 'W', 'E', 'R', 'T', 'Y'];
+  const controls = useAnimation();
+
+  const containerVariants = {
+    hidden: { opacity: 0, y: 100 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        delay: 0.6,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const keyVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { type: 'spring', stiffness: 300, damping: 10 }
+    },
+    hover: { 
+      y: -10, 
+      scale: 1.1,
+      boxShadow: '0px 5px 10px rgba(0,0,0,0.2)',
+      transition: { duration: 0.2 }
+    },
+    tap: { scale: 0.95 }
+  };
+
+  useEffect(() => {
+    const pulseAnimation = async () => {
+      await controls.start(i => ({
+        scale: [1, 1.2, 1],
+        transition: { duration: 0.5, delay: i * 0.1 }
+      }));
+      await controls.start({ scale: 1 });
+      pulseAnimation();
+    };
+
+    pulseAnimation();
+  }, [controls]);
+
   return (
     <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent">
       <motion.div
-        className="flex justify-center space-x-2 mt-4"
-        initial={{ y: 100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
+        className="flex justify-center space-x-2 md:space-x-3 mt-4"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
-        {['Q', 'W', 'E', 'R', 'T', 'Y'].map((key, index) => (
+        {keys.map((key, index) => (
           <motion.div
             key={key}
-            className="w-12 h-12 bg-white bg-opacity-20 rounded flex items-center justify-center text-lg font-bold"
-            whileHover={{ y: -5, backgroundColor: '#ffffff40' }}
-            whileTap={{ scale: 0.95 }}
+            className="w-12 md:w-14 h-12 md:h-14 bg-white bg-opacity-20 rounded-lg flex items-center justify-center text-xl md:text-2xl font-bold cursor-pointer"
+            variants={keyVariants}
+            whileHover="hover"
+            whileTap="tap"
+            custom={index}
+            animate={controls}
+            style={{
+              background: `linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)`,
+              backdropFilter: 'blur(5px)',
+              border: '1px solid rgba(255,255,255,0.18)'
+            }}
           >
-            {key}
+            <motion.span
+              initial={{ rotateX: 90 }}
+              animate={{ rotateX: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+            >
+              {key}
+            </motion.span>
           </motion.div>
         ))}
       </motion.div>
     </div>
   );
 };
+
+
+
 
 const FeaturesSection = () => {
   const features = [
@@ -145,7 +210,7 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-gray-800">
+    <section className="py-20 bg-customPurple">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl font-bold text-center mb-12 text-white">Elevate Your Typing Skills</h2>
         <div className="grid md:grid-cols-2 gap-8">
@@ -210,7 +275,7 @@ const PricingSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-gray-800">
+    <section className="py-20 bg-customPurple">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl font-bold text-center mb-12 text-white">Choose Your Plan</h2>
         <div className="grid md:grid-cols-3 gap-8">
