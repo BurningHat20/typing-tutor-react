@@ -21,8 +21,13 @@ export const updateHighScore = createAsyncThunk(
 export const saveTestHistoryAsync = createAsyncThunk(
   'typing/saveTestHistory',
   async (testData, { getState, dispatch }) => {
-    const { wpm, userEmail } = getState().typing;
-    const updatedTestData = { ...testData, wpm };
+    const { wpm, userEmail, currentLesson, currentTextId } = getState().typing;
+    const updatedTestData = { 
+      ...testData, 
+      wpm, 
+      lessonId: currentLesson, 
+      textId: currentTextId 
+    };
     const response = await saveTestHistory(updatedTestData);
     dispatch(fetchTestHistoryAsync(userEmail));
     dispatch(updateHighScore());
@@ -48,6 +53,7 @@ const lessons = {
     "The integration of technology in education has significantly transformed learning experiences, making them more interactive and accessible. Online platforms and digital tools have revolutionized the way knowledge is imparted and absorbed, allowing students to learn at their own pace and convenience. One notable advancement is the development of typing tutor applications, which play a crucial role in enhancing typing skills—a fundamental aspect of digital literacy. These applications not only provide interactive lessons but also track progress and offer personalized feedback, ensuring users continuously improve their typing speed and accuracy. ",
     "A journey of a thousand miles begins with a single step.",
     "Practice makes perfect.",
+     "A journey of a thousand miles begins with a single step.",
   ],
   intermediate: [
     "To be or not to be, that is the question.",
@@ -78,6 +84,7 @@ const initialState = {
   userEmail: null,
   wpm: 0,
   currentLesson: null,
+  currentTextId: null,
 };
 
 const resetTestState = (state) => {
@@ -94,6 +101,7 @@ const resetTestState = (state) => {
 const resetLessonState = (state) => {
   resetTestState(state);
   state.currentTextIndex = 0;
+  state.currentTextId = 0;
 };
 
 export const typingSlice = createSlice({
@@ -154,10 +162,14 @@ export const typingSlice = createSlice({
       if (newLesson !== state.currentLesson) {
         state.currentLesson = newLesson;
         state.texts = lessons[newLesson] || [];
+        state.currentTextId = 0;
         resetLessonState(state);
       }
     },
     resetLesson: resetLessonState,
+    updateCurrentTextId: (state) => {
+      state.currentTextId = state.currentTextIndex;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -193,6 +205,7 @@ export const {
   calculateAndSetWPM,
   setCurrentLesson,
   resetLesson,
+  updateCurrentTextId,
 } = typingSlice.actions;
 
 export default typingSlice.reducer;

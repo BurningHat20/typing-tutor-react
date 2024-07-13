@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useUser } from "@clerk/clerk-react";
 import { fetchTestHistoryAsync } from "../store/typingSlice";
 import { selectTestHistory } from "../store/selectors";
-import { FiClock, FiTarget, FiAlertCircle, FiDelete } from "react-icons/fi";
+import { FiClock, FiTarget, FiAlertCircle, FiDelete, FiBook, FiFileText } from "react-icons/fi";
+
 
 const TestHistory = () => {
   const { isSignedIn } = useUser();
@@ -52,6 +53,12 @@ const TestHistory = () => {
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Backspaces
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Lesson
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Text #
                 </th>
               </tr>
             </thead>
@@ -107,6 +114,22 @@ const TestHistoryRow = React.memo(({ test, index }) => (
         <FiDelete className="text-indigo-500 dark:text-indigo-400 mr-2" />
         <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
           {test.backspaces_used}
+        </span>
+      </div>
+    </td>
+    <td className="px-4 py-4 whitespace-nowrap">
+      <div className="flex items-center">
+        <FiBook className="text-purple-500 dark:text-purple-400 mr-2" />
+        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          {test.lesson_id}
+        </span>
+      </div>
+    </td>
+    <td className="px-4 py-4 whitespace-nowrap">
+      <div className="flex items-center">
+        <FiFileText className="text-yellow-500 dark:text-yellow-400 mr-2" />
+        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          {test.text_id + 1}
         </span>
       </div>
     </td>

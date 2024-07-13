@@ -18,8 +18,10 @@ import {
   resetTest,
   resetLesson,
   updateHighScore,
+  updateCurrentTextId,
 } from "../store/typingSlice";
 import { selectTypingArea } from "../store/selectors";
+import { FiType } from "react-icons/fi"; // Import the icon for character count
 
 const TypingArea = () => {
   const { isSignedIn, user } = useUser();
@@ -106,7 +108,7 @@ const TypingArea = () => {
         lessonId: currentLesson,
       };
       dispatch(saveTestHistoryAsync(testData));
-      dispatch(updateHighScore()); // Add this line
+      dispatch(updateHighScore());
     }
   }, [userEmail, mistakes, backspacesUsed, currentLesson, dispatch]);
 
@@ -141,6 +143,7 @@ const TypingArea = () => {
 
   const handleNextText = useCallback(() => {
     dispatch(changeText());
+    dispatch(updateCurrentTextId());
     dispatch(resetTest());
   }, [dispatch]);
 
@@ -170,9 +173,15 @@ const TypingArea = () => {
 
   return (
     <div className="mt-4">
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-        Text {currentTextIndex + 1} of {texts.length}
-      </p>
+      <div className="flex justify-between items-center mb-2">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Text {currentTextIndex + 1} of {texts.length}
+        </p>
+        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+          <FiType className="mr-1" />
+          <span>{text.length} characters</span>
+        </div>
+      </div>
       <div
         ref={containerRef}
         className="text-lg font-mono p-6 border-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 dark:text-white dark:border-gray-700"
