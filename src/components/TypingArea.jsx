@@ -1,8 +1,8 @@
 // src/components/TypingArea.jsx
-import React, { useEffect, useRef, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useUser } from '@clerk/clerk-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useUser } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 import {
   setUserInput,
   startTimer,
@@ -17,28 +17,28 @@ import {
   changeText,
   resetTest,
   resetLesson,
-  updateHighScore
-} from '../store/typingSlice';
-import { selectTypingArea } from '../store/selectors';
+  updateHighScore,
+} from "../store/typingSlice";
+import { selectTypingArea } from "../store/selectors";
 
 const TypingArea = () => {
   const { isSignedIn, user } = useUser();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { 
-    texts, 
-    currentTextIndex, 
-    userInput, 
-    startTime, 
-    completed, 
-    backspaceEnabled, 
+  const {
+    texts,
+    currentTextIndex,
+    userInput,
+    startTime,
+    completed,
+    backspaceEnabled,
     userEmail,
     elapsedTime,
     mistakes,
     backspacesUsed,
-    currentLesson
+    currentLesson,
   } = useSelector(selectTypingArea);
-  
+
   const text = texts[currentTextIndex];
   const containerRef = useRef(null);
 
@@ -72,25 +72,28 @@ const TypingArea = () => {
     return () => clearInterval(timer);
   }, [startTime, completed, dispatch]);
 
-  const handleKeyDown = useCallback((e) => {
-    e.preventDefault();
-    if (completed) return;
+  const handleKeyDown = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (completed) return;
 
-    const key = e.key;
-    if (key.length === 1 || (key === 'Backspace' && backspaceEnabled)) {
-      let newInput = userInput;
-      if (key === 'Backspace' && backspaceEnabled) {
-        newInput = userInput.slice(0, -1);
-        dispatch(incrementBackspaces());
-      } else if (userInput.length < text.length) {
-        newInput = userInput + key;
-        if (key !== text[userInput.length]) {
-          dispatch(incrementMistakes());
+      const key = e.key;
+      if (key.length === 1 || (key === "Backspace" && backspaceEnabled)) {
+        let newInput = userInput;
+        if (key === "Backspace" && backspaceEnabled) {
+          newInput = userInput.slice(0, -1);
+          dispatch(incrementBackspaces());
+        } else if (userInput.length < text.length) {
+          newInput = userInput + key;
+          if (key !== text[userInput.length]) {
+            dispatch(incrementMistakes());
+          }
         }
+        dispatch(setUserInput(newInput));
       }
-      dispatch(setUserInput(newInput));
-    }
-  }, [completed, backspaceEnabled, userInput, text, dispatch]);
+    },
+    [completed, backspaceEnabled, userInput, text, dispatch]
+  );
 
   const handleTestCompletion = useCallback(() => {
     if (userEmail) {
@@ -114,16 +117,19 @@ const TypingArea = () => {
   }, [text, mistakes]);
 
   const renderText = useCallback(() => {
-    return text?.split('').map((char, index) => {
-      let className = 'text-gray-500 dark:text-gray-400';
+    return text?.split("").map((char, index) => {
+      let className = "text-gray-500 dark:text-gray-400";
       if (index < userInput.length) {
-        className = char === userInput[index] ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400';
-        if (char === ' ' && userInput[index] !== ' ') {
-          className += ' bg-red-200 dark:bg-red-900';
+        className =
+          char === userInput[index]
+            ? "text-green-500 dark:text-green-400"
+            : "text-red-500 dark:text-red-400";
+        if (char === " " && userInput[index] !== " ") {
+          className += " bg-red-200 dark:bg-red-900";
         }
       }
       if (index === userInput.length) {
-        className += ' border-l-2 border-black dark:border-white animate-pulse';
+        className += " border-l-2 border-black dark:border-white animate-pulse";
       }
       return (
         <span key={index} className={className}>
@@ -141,7 +147,7 @@ const TypingArea = () => {
   const handleFinishLesson = useCallback(() => {
     dispatch(setCurrentLesson(null));
     dispatch(resetLesson());
-    navigate('/lessons');
+    navigate("/lessons");
   }, [dispatch, navigate]);
 
   const handleRestartLesson = useCallback(() => {
@@ -149,11 +155,17 @@ const TypingArea = () => {
   }, [dispatch]);
 
   if (!isSignedIn) {
-    return <div className="text-center mt-8">Please sign in to start typing.</div>;
+    return (
+      <div className="text-center mt-8">Please sign in to start typing.</div>
+    );
   }
 
   if (!currentLesson) {
-    return <div className="text-center mt-8">Please select a lesson to start typing.</div>;
+    return (
+      <div className="text-center mt-8">
+        Please select a lesson to start typing.
+      </div>
+    );
   }
 
   return (
@@ -161,7 +173,7 @@ const TypingArea = () => {
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
         Text {currentTextIndex + 1} of {texts.length}
       </p>
-      <div 
+      <div
         ref={containerRef}
         className="text-lg font-mono p-6 border-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 dark:text-white dark:border-gray-700"
         tabIndex={0}
@@ -169,22 +181,24 @@ const TypingArea = () => {
       >
         {renderText()}
       </div>
-      <div className="mt-4 flex justify-between">
+      <div className="mt-4 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
         <button
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm sm:text-base"
           onClick={handleNextText}
           disabled={currentTextIndex === texts.length - 1}
         >
-          {currentTextIndex === texts.length - 1 ? "Lesson Complete" : "Next Text"}
+          {currentTextIndex === texts.length - 1
+            ? "Lesson Complete"
+            : "Next Text"}
         </button>
         <button
-          className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded transition-colors duration-200"
+          className="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded transition-colors duration-200 text-sm sm:text-base"
           onClick={handleRestartLesson}
         >
           Restart Lesson
         </button>
         <button
-          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition-colors duration-200"
+          className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition-colors duration-200 text-sm sm:text-base"
           onClick={handleFinishLesson}
         >
           Finish Lesson
