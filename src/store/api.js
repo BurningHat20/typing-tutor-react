@@ -1,6 +1,6 @@
 // src/store/api.js
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://typing-tutor-backend.vercel.app/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://typing-tutor-backend.vercel.app/api';
 
 const handleResponse = async (response) => {
   if (!response.ok) {
