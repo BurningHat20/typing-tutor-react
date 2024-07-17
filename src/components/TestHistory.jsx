@@ -5,17 +5,16 @@ import { fetchTestHistoryAsync } from "../store/typingSlice";
 import { selectTestHistory } from "../store/selectors";
 import { FiClock, FiTarget, FiAlertCircle, FiDelete, FiBook, FiFileText } from "react-icons/fi";
 
-
 const TestHistory = () => {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
   const dispatch = useDispatch();
-  const { testHistory, userEmail } = useSelector(selectTestHistory);
+  const { testHistory } = useSelector(selectTestHistory);
 
   useEffect(() => {
-    if (isSignedIn && userEmail) {
-      dispatch(fetchTestHistoryAsync(userEmail));
+    if (isSignedIn && user) {
+      dispatch(fetchTestHistoryAsync(user.primaryEmailAddress.emailAddress));
     }
-  }, [isSignedIn, userEmail, dispatch]);
+  }, [isSignedIn, user, dispatch]);
 
   const memoizedTestHistory = useMemo(() => testHistory, [testHistory]);
 
