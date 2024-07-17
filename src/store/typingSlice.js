@@ -9,6 +9,12 @@ export const calculateWPM = (userInput, elapsedTime) => {
   return Math.round(wpm);
 };
 
+export const calculateAccuracy = (totalChars, mistakes) => {
+  if (totalChars === 0) return 100; // Handle edge case of empty text
+  const correctChars = Math.max(0, totalChars - mistakes);
+  return Math.max(0, Math.round((correctChars / totalChars) * 100));
+};
+
 export const updateHighScore = createAsyncThunk(
   'typing/updateHighScore',
   async (_, { getState }) => {
@@ -21,10 +27,13 @@ export const updateHighScore = createAsyncThunk(
 export const saveTestHistoryAsync = createAsyncThunk(
   'typing/saveTestHistory',
   async (testData, { getState, dispatch }) => {
-    const { wpm, userEmail, currentLesson, currentTextId } = getState().typing;
+    const { wpm, userEmail, currentLesson, currentTextId, texts, currentTextIndex, mistakes } = getState().typing;
+    const totalChars = texts[currentTextIndex].length;
+    const accuracy = calculateAccuracy(totalChars, mistakes);
     const updatedTestData = { 
       ...testData, 
       wpm, 
+      accuracy,
       lessonId: currentLesson, 
       textId: currentTextId 
     };

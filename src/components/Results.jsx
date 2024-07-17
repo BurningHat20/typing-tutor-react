@@ -5,6 +5,7 @@ import { useUser } from '@clerk/clerk-react';
 import { resetTest, changeText, toggleBackspace, fetchHighScoreAsync } from '../store/typingSlice';
 import { selectTypingResults } from '../store/selectors';
 import { FiRefreshCw, FiSkipForward, FiAward, FiDelete, FiTarget } from 'react-icons/fi';
+import { calculateAccuracy } from '../store/typingSlice';
 
 const colorClasses = {
   blue: 'bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 text-blue-900 dark:text-blue-100',
@@ -53,8 +54,7 @@ const Results = () => {
 
   const accuracy = useMemo(() => {
     const totalChars = texts[currentTextIndex].length;
-    const correctChars = totalChars - mistakes;
-    return Math.round((correctChars / totalChars) * 100);
+    return calculateAccuracy(totalChars, mistakes);
   }, [texts, currentTextIndex, mistakes]);
 
   const handleReset = useCallback(() => dispatch(resetTest()), [dispatch]);
@@ -77,7 +77,6 @@ const Results = () => {
       </div>
       <div className="mt-6 flex flex-wrap justify-center gap-4">
         <ActionButton onClick={handleReset} icon={<FiRefreshCw />} label="Reset Test" color="blue" />
-        {/* <ActionButton onClick={handleChangeText} icon={<FiSkipForward />} label="Next Text" color="green" /> */}
         <ActionButton 
           onClick={handleToggleBackspace} 
           icon={<FiDelete />} 
