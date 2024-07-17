@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, Link } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes, Navigate, useLocation, Link } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
 import { Provider, useSelector, useDispatch } from 'react-redux';
 import { FaBars, FaTimes } from 'react-icons/fa';
@@ -163,6 +163,8 @@ function AppContent() {
               path="/history" 
               element={isSignedIn ? <TestHistory /> : <Navigate to="/" />} 
             />
+            {/* Catch-all route */}
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
         {!isLandingPage && (
