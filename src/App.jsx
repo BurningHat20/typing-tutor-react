@@ -13,7 +13,6 @@ import UserButton from './components/UserButton';
 import LandingPage from './components/LandingPage';
 import LessonSelector from './components/LessonSelector';
 import Loader from './components/Loader';
-import SignInComponent from './components/SignIn';
 import { setCurrentLesson, setDarkMode } from './store/typingSlice';
 
 function AppContent() {
@@ -140,12 +139,8 @@ function AppContent() {
               element={!isSignedIn ? <LandingPage /> : <Navigate to="/lessons" />} 
             />
             <Route 
-              path="/sign-in" 
-              element={!isSignedIn ? <SignInComponent /> : <Navigate to="/lessons" />} 
-            />
-            <Route 
               path="/lessons" 
-              element={isSignedIn ? <LessonSelector /> : <Navigate to="/sign-in" />} 
+              element={isSignedIn ? <LessonSelector /> : <Navigate to="/" />} 
             />
             <Route 
               path="/typing" 
@@ -160,13 +155,13 @@ function AppContent() {
                     <Navigate to="/lessons" />
                   )
                 ) : (
-                  <Navigate to="/sign-in" />
+                  <Navigate to="/" />
                 )
               } 
             />
             <Route 
               path="/history" 
-              element={isSignedIn ? <TestHistory /> : <Navigate to="/sign-in" />} 
+              element={isSignedIn ? <TestHistory /> : <Navigate to="/" />} 
             />
           </Routes>
         </main>
@@ -183,7 +178,9 @@ function AppContent() {
 function App() {
   return (
     <Provider store={store}>
-      <AppContent />
+      <Router>
+        <AppContent />
+      </Router>
     </Provider>
   );
 }
