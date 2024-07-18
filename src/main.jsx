@@ -2,17 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ClerkProvider } from '@clerk/clerk-react';
 import App from './App';
-import './index.css';
+import './index.css'; // If you're using Tailwind, make sure to import your CSS
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-
-if (!PUBLISHABLE_KEY) {
-  throw new Error("Missing Publishable Key")
-}
+const clerkPubKey = 'pk_test_aGVhbHRoeS1iZWFyLTgxLmNsZXJrLmFjY291bnRzLmRldiQ'; // Replace with your actual Clerk publishable key
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+    <ClerkProvider publishableKey={clerkPubKey}>
       <App />
     </ClerkProvider>
   </React.StrictMode>

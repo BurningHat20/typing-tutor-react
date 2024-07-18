@@ -1,7 +1,7 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, Link } from 'react-router-dom';
-import { useUser, useClerk } from '@clerk/clerk-react';
+import { useUser } from '@clerk/clerk-react';
 import { Provider, useSelector, useDispatch } from 'react-redux';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { store } from './store/store';
@@ -13,13 +13,10 @@ import UserButton from './components/UserButton';
 import LandingPage from './components/LandingPage';
 import LessonSelector from './components/LessonSelector';
 import Loader from './components/Loader';
-import SignIn from './components/SignIn';
-import SignUp from './components/SignUp';
 import { setCurrentLesson, setDarkMode } from './store/typingSlice';
 
 function AppContent() {
-  const { isSignedIn, isLoaded: userLoaded } = useUser();
-  const { loaded: clerkLoaded } = useClerk();
+  const { isSignedIn, isLoaded } = useUser();
   const darkMode = useSelector((state) => state.typing.darkMode);
   const currentLesson = useSelector((state) => state.typing.currentLesson);
   const location = useLocation();
@@ -71,7 +68,7 @@ function AppContent() {
     }
   }, [currentLesson]);
 
-  if (!userLoaded || !clerkLoaded) {
+  if (!isLoaded) {
     return <div className="flex justify-center items-center h-screen"><Loader/></div>;
   }
 
@@ -140,14 +137,6 @@ function AppContent() {
             <Route 
               path="/" 
               element={!isSignedIn ? <LandingPage /> : <Navigate to="/lessons" />} 
-            />
-            <Route 
-              path="/sign-in/*" 
-              element={!isSignedIn ? <SignIn /> : <Navigate to="/lessons" />} 
-            />
-            <Route 
-              path="/sign-up/*" 
-              element={!isSignedIn ? <SignUp /> : <Navigate to="/lessons" />} 
             />
             <Route 
               path="/lessons" 

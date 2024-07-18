@@ -1,12 +1,12 @@
 import React from 'react';
 import { SignIn } from '@clerk/clerk-react';
 
-const SignInPage = () => {
+const SignInComponent = () => {
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900">
-      <SignIn routing="path" path="/sign-in" redirectUrl="/lessons" />
+    <div className="flex justify-center items-center my-8">
+      <SignIn />
     </div>
   );
 };
 
-export default SignInPage;
+export default SignInComponent;
