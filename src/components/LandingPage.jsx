@@ -1,8 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence,  useAnimation } from 'framer-motion';
-import { FaKeyboard, FaChartLine, FaTrophy, FaArrowRight,  FaQuoteLeft, FaRocket, FaCheck } from 'react-icons/fa';
-import { SignInButton, SignUpButton, useUser } from '@clerk/clerk-react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
+import {
+  FaKeyboard,
+  FaChartLine,
+  FaTrophy,
+  FaArrowRight,
+  FaQuoteLeft,
+  FaRocket,
+  FaCheck,
+} from "react-icons/fa";
+import { SignInButton, SignUpButton, useUser } from "@clerk/clerk-react";
+import { Link } from "react-router-dom";
 
 const LandingPage = () => {
   const { isSignedIn, user } = useUser();
@@ -70,7 +78,7 @@ const HeroSection = () => {
       </div>
 
       <div className="container mx-auto px-4 z-10">
-        <motion.h1 
+        <motion.h1
           className="text-4xl md:text-6xl font-bold mb-6"
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -78,13 +86,13 @@ const HeroSection = () => {
         >
           Master the Art of Typing
         </motion.h1>
-        <motion.p 
+        <motion.p
           className="text-xl md:text-2xl mb-8"
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          Achieve 
+          Achieve
           <AnimatePresence mode="wait">
             <motion.span
               key={currentWordIndex}
@@ -118,9 +126,8 @@ const HeroSection = () => {
   );
 };
 
-
 const KeyboardAnimation = () => {
-  const keys = ['Q', 'W', 'E', 'R', 'T', 'Y'];
+  const keys = ["Q", "W", "E", "R", "T", "Y"];
   const controls = useAnimation();
 
   const containerVariants = {
@@ -131,32 +138,32 @@ const KeyboardAnimation = () => {
       transition: {
         duration: 0.5,
         delay: 0.6,
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const keyVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
+    visible: {
+      y: 0,
       opacity: 1,
-      transition: { type: 'spring', stiffness: 300, damping: 10 }
+      transition: { type: "spring", stiffness: 300, damping: 10 },
     },
-    hover: { 
-      y: -10, 
+    hover: {
+      y: -10,
       scale: 1.1,
-      boxShadow: '0px 5px 10px rgba(0,0,0,0.2)',
-      transition: { duration: 0.2 }
+      boxShadow: "0px 5px 10px rgba(0,0,0,0.2)",
+      transition: { duration: 0.2 },
     },
-    tap: { scale: 0.95 }
+    tap: { scale: 0.95 },
   };
 
   useEffect(() => {
     const pulseAnimation = async () => {
-      await controls.start(i => ({
+      await controls.start((i) => ({
         scale: [1, 1.2, 1],
-        transition: { duration: 0.5, delay: i * 0.1 }
+        transition: { duration: 0.5, delay: i * 0.1 },
       }));
       await controls.start({ scale: 1 });
       pulseAnimation();
@@ -184,8 +191,8 @@ const KeyboardAnimation = () => {
             animate={controls}
             style={{
               background: `linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)`,
-              backdropFilter: 'blur(5px)',
-              border: '1px solid rgba(255,255,255,0.18)'
+              backdropFilter: "blur(5px)",
+              border: "1px solid rgba(255,255,255,0.18)",
             }}
           >
             <motion.span
@@ -202,24 +209,39 @@ const KeyboardAnimation = () => {
   );
 };
 
-
-
-
 const FeaturesSection = () => {
   const features = [
-    { icon: <FaKeyboard />, title: "Adaptive Lessons", description: "Personalized exercises that evolve with your skills" },
-    { icon: <FaChartLine />, title: "Real-time Analytics", description: "Instant feedback and detailed progress tracking" },
-    { icon: <FaTrophy />, title: "Gamified Challenges", description: "Fun, competitive elements to boost motivation" },
-    { icon: <FaRocket />, title: "Speed Optimization", description: "Targeted drills to increase your typing speed" },
+    {
+      icon: <FaKeyboard />,
+      title: "Adaptive Lessons",
+      description: "Personalized exercises that evolve with your skills",
+    },
+    {
+      icon: <FaChartLine />,
+      title: "Real-time Analytics",
+      description: "Instant feedback and detailed progress tracking",
+    },
+    {
+      icon: <FaTrophy />,
+      title: "Gamified Challenges",
+      description: "Fun, competitive elements to boost motivation",
+    },
+    {
+      icon: <FaRocket />,
+      title: "Speed Optimization",
+      description: "Targeted drills to increase your typing speed",
+    },
   ];
 
   return (
     <section className="py-20 bg-customPurple">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-12 text-white">Elevate Your Typing Skills</h2>
+        <h2 className="text-4xl font-bold text-center mb-12 text-white">
+          Elevate Your Typing Skills
+        </h2>
         <div className="grid md:grid-cols-2 gap-8">
           {features.map((feature, index) => (
-            <motion.div 
+            <motion.div
               key={index}
               className="bg-gray-700 rounded-lg p-6 shadow-lg flex items-start"
               initial={{ opacity: 0, y: 20 }}
@@ -228,7 +250,9 @@ const FeaturesSection = () => {
             >
               <div className="text-3xl mr-4 text-blue-400">{feature.icon}</div>
               <div>
-                <h3 className="text-xl font-semibold mb-2 text-white">{feature.title}</h3>
+                <h3 className="text-xl font-semibold mb-2 text-white">
+                  {feature.title}
+                </h3>
                 <p className="text-gray-300">{feature.description}</p>
               </div>
             </motion.div>
@@ -241,18 +265,32 @@ const FeaturesSection = () => {
 
 const TestimonialsSection = () => {
   const testimonials = [
-    { name: "Sarah L.", role: "Content Writer", text: "This typing tutor has revolutionized my workflow. My productivity has doubled!" },
-    { name: "Mike R.", role: "Software Developer", text: "The interactive lessons made improving my coding speed both fun and effective." },
-    { name: "Emily K.", role: "Student", text: "Thanks to this app, I can now easily keep up with lecture notes and finish assignments faster." },
+    {
+      name: "Sarah L.",
+      role: "Content Writer",
+      text: "This typing tutor has revolutionized my workflow. My productivity has doubled!",
+    },
+    {
+      name: "Mike R.",
+      role: "Software Developer",
+      text: "The interactive lessons made improving my coding speed both fun and effective.",
+    },
+    {
+      name: "Emily K.",
+      role: "Student",
+      text: "Thanks to this app, I can now easily keep up with lecture notes and finish assignments faster.",
+    },
   ];
 
   return (
     <section className="py-20 bg-gray-900">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-12 text-white">What Our Users Say</h2>
+        <h2 className="text-4xl font-bold text-center mb-12 text-white">
+          What Our Users Say
+        </h2>
         <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
-            <motion.div 
+            <motion.div
               key={index}
               className="bg-gray-800 rounded-lg p-6 shadow-lg relative"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -260,7 +298,9 @@ const TestimonialsSection = () => {
               transition={{ delay: index * 0.2 }}
             >
               <FaQuoteLeft className="text-4xl text-blue-400 absolute top-4 left-4" />
-              <p className="text-gray-300 mb-4 relative z-10 pt-8">"{testimonial.text}"</p>
+              <p className="text-gray-300 mb-4 relative z-10 pt-8">
+                "{testimonial.text}"
+              </p>
               <div className="font-semibold text-white">{testimonial.name}</div>
               <div className="text-sm text-gray-400">{testimonial.role}</div>
             </motion.div>
@@ -273,26 +313,58 @@ const TestimonialsSection = () => {
 
 const PricingSection = () => {
   const plans = [
-    { name: "Basic", price: "Free", features: ["5 lessons per day", "Basic progress tracking", "Community forum access"] },
-    { name: "Pro", price: "$9.99/month", features: ["Unlimited lessons", "Advanced analytics", "Priority support", "Custom lesson creator"] },
-    { name: "Team", price: "$29.99/month", features: ["Everything in Pro", "Team progress dashboard", "Admin controls", "API access"] },
+    {
+      name: "Basic",
+      price: "Free",
+      features: [
+        "5 lessons per day",
+        "Basic progress tracking",
+        "Community forum access",
+      ],
+    },
+    {
+      name: "Pro",
+      price: "$9.99/month",
+      features: [
+        "Unlimited lessons",
+        "Advanced analytics",
+        "Priority support",
+        "Custom lesson creator",
+      ],
+    },
+    {
+      name: "Team",
+      price: "$29.99/month",
+      features: [
+        "Everything in Pro",
+        "Team progress dashboard",
+        "Admin controls",
+        "API access",
+      ],
+    },
   ];
 
   return (
     <section className="py-20 bg-customPurple">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-12 text-white">Choose Your Plan</h2>
+        <h2 className="text-4xl font-bold text-center mb-12 text-white">
+          Choose Your Plan
+        </h2>
         <div className="grid md:grid-cols-3 gap-8">
           {plans.map((plan, index) => (
-            <motion.div 
+            <motion.div
               key={index}
               className="bg-gray-700 rounded-lg p-6 shadow-lg border border-gray-600"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <h3 className="text-2xl font-bold mb-4 text-white">{plan.name}</h3>
-              <div className="text-4xl font-bold mb-6 text-blue-400">{plan.price}</div>
+              <h3 className="text-2xl font-bold mb-4 text-white">
+                {plan.name}
+              </h3>
+              <div className="text-4xl font-bold mb-6 text-blue-400">
+                {plan.price}
+              </div>
               <ul className="mb-8">
                 {plan.features.map((feature, i) => (
                   <li key={i} className="flex items-center mb-2 text-gray-300">
@@ -310,16 +382,24 @@ const PricingSection = () => {
       </div>
     </section>
   );
-};  
+};
 
 const Footer = () => (
   <footer className="bg-gray-900 py-8">
     <div className="container mx-auto px-4 text-center">
-      <p className="text-gray-400">© 2023 Pro Typing Tutor. All rights reserved.</p>
+      <p className="text-gray-400">
+        © 2023 Pro Typing Tutor. All rights reserved.
+      </p>
       <div className="mt-4 space-x-4">
-        <a href="#" className="text-gray-400 hover:text-white">Terms of Service</a>
-        <a href="#" className="text-gray-400 hover:text-white">Privacy Policy</a>
-        <a href="#" className="text-gray-400 hover:text-white">Contact Us</a>
+        <a href="#" className="text-gray-400 hover:text-white">
+          Terms of Service
+        </a>
+        <a href="#" className="text-gray-400 hover:text-white">
+          Privacy Policy
+        </a>
+        <a href="#" className="text-gray-400 hover:text-white">
+          Contact Us
+        </a>
       </div>
     </div>
   </footer>

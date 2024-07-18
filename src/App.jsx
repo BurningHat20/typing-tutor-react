@@ -1,7 +1,7 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, Link } from 'react-router-dom';
-import { useUser } from '@clerk/clerk-react';
+import { useUser, useClerk } from '@clerk/clerk-react';
 import { Provider, useSelector, useDispatch } from 'react-redux';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { store } from './store/store';
@@ -18,7 +18,8 @@ import SignUp from './components/SignUp';
 import { setCurrentLesson, setDarkMode } from './store/typingSlice';
 
 function AppContent() {
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded: userLoaded } = useUser();
+  const { loaded: clerkLoaded } = useClerk();
   const darkMode = useSelector((state) => state.typing.darkMode);
   const currentLesson = useSelector((state) => state.typing.currentLesson);
   const location = useLocation();
@@ -70,7 +71,7 @@ function AppContent() {
     }
   }, [currentLesson]);
 
-  if (!isLoaded) {
+  if (!userLoaded || !clerkLoaded) {
     return <div className="flex justify-center items-center h-screen"><Loader/></div>;
   }
 
