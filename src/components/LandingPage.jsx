@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence,  useAnimation } from 'framer-motion';
 import { FaKeyboard, FaChartLine, FaTrophy, FaArrowRight,  FaQuoteLeft, FaRocket, FaCheck } from 'react-icons/fa';
 import { SignInButton, SignUpButton, useUser } from '@clerk/clerk-react';
+import { Link } from 'react-router-dom';
 
 const LandingPage = () => {
   const { isSignedIn, user } = useUser();
@@ -27,12 +28,15 @@ const Header = ({ isSignedIn, user }) => (
           <span>Welcome, {user.firstName}!</span>
         ) : (
           <div className="space-x-4">
-            <SignInButton mode="modal">
-              <button className="text-white hover:text-purple-200">Sign In</button>
-            </SignInButton>
-            <SignUpButton mode="modal">
-              <button className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">Sign Up</button>
-            </SignUpButton>
+            <Link to="/sign-in" className="text-white hover:text-purple-200">
+              Sign In
+            </Link>
+            <Link
+              to="/sign-up"
+              className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+            >
+              Sign Up
+            </Link>
           </div>
         )}
       </div>
